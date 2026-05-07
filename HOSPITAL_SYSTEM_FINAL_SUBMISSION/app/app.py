@@ -76,28 +76,77 @@ class HospitalApp(tk.Tk):
                                                        res[0]['nurse_id'] or res[0]['employee_id'])
                     if r == "Patient": self.show_patient()
                     elif r == "Doctor": self.show_doctor()
+                    elif r == "Nurse": self.show_nurse()
                     else: messagebox.showerror("Error", "Invalid role configuration.")
             else: messagebox.showerror("Error", "Invalid credentials.")
         ttk.Button(card, text="SECURE LOGIN", command=do_login).pack(fill="x")
         ttk.Button(card, text="REGISTER NEW ACCOUNT", command=self.show_register).pack(fill="x", pady=(10,0))
 
     def show_register(self):
-        self.clear(); f = tk.Frame(self.container, padx=80, pady=50, bg="#f8fafc"); f.pack(fill="both", expand=True)
-        tk.Label(f, text="✨ Create Your Account", font=("Segoe UI", 24, "bold"), bg="#f8fafc").pack(pady=20)
-        grid = tk.Frame(f, bg="#f8fafc"); grid.pack(); fields = [("Full Name", "name"), ("SSN", "ssn"), ("Username", "user"), ("Password", "pass"), ("Email", "email"), ("Patient ID (Int)", "pid")]
-        entries = {k: ttk.Entry(grid, font=("Segoe UI", 12), width=30) for _, k in fields}
-        for i, (lbl, key) in enumerate(fields):
-            tk.Label(grid, text=lbl+":", font=("Segoe UI", 12), bg="#f8fafc").grid(row=i, column=0, sticky="e", pady=8, padx=10)
-            if key == "pass": entries[key].config(show="*")
-            entries[key].grid(row=i, column=1, pady=8)
+        self.clear()
+        f = tk.Frame(self.container, padx=80, pady=30, bg="#f8fafc"); f.pack(fill="both", expand=True)
+        tk.Label(f, text="✨ Create Your Account", font=("Segoe UI", 24, "bold"), bg="#f8fafc").pack(pady=(10, 15))
+
+        # ── Role Selector
+        role_fr = tk.Frame(f, bg="#f8fafc"); role_fr.pack(pady=(0, 10))
+        tk.Label(role_fr, text="Register as:", font=("Segoe UI", 13, "bold"), bg="#f8fafc").pack(side="left", padx=10)
+        role_var = tk.StringVar(value="Patient")
+        for r in ["Patient", "Doctor", "Nurse"]:
+            ttk.Radiobutton(role_fr, text=r, variable=role_var, value=r, command=lambda: update_fields()).pack(side="left", padx=10)
+
+        # ── Dynamic Fields Container
+        grid = tk.Frame(f, bg="#f8fafc"); grid.pack()
+        entries = {}
+
+        def update_fields():
+            for w in grid.winfo_children(): w.destroy()
+            entries.clear()
+            role = role_var.get()
+            # Common fields for all roles
+            common = [("Full Name", "name"), ("SSN", "ssn"), ("Username", "user"), ("Password", "pass"), ("Email", "email")]
+            if role == "Patient":
+                fields = common + [("Patient ID (Int)", "pid"), ("Blood Type", "blood"), ("Sex (Male/Female)", "sex")]
+            elif role == "Doctor":
+                fields = common + [("Doctor ID (Int)", "did"), ("Specialty", "major"), ("License Number", "lic"), ("Department Code", "dept"), ("Sex (Male/Female)", "sex")]
+            elif role == "Nurse":
+                fields = common + [("Nurse ID (Int)", "nid"), ("Department Code", "dept"), ("Phone", "phone"), ("Sex (Male/Female)", "sex")]
+
+            for i, (lbl, key) in enumerate(fields):
+                tk.Label(grid, text=lbl + ":", font=("Segoe UI", 11), bg="#f8fafc").grid(row=i, column=0, sticky="e", pady=5, padx=10)
+                ent = ttk.Entry(grid, font=("Segoe UI", 11), width=30)
+                if key == "pass": ent.config(show="*")
+                ent.grid(row=i, column=1, pady=5)
+                entries[key] = ent
+
+        update_fields()  # Initialize with Patient fields
+
         def do_reg():
             v = {k: e.get().strip() for k, e in entries.items()}
-            # First create the patient record
-            safe_query("INSERT INTO PATIENT (patient_number,ssn,name) VALUES (%s,%s,%s)", (v['pid'], v['ssn'], v['name']), fetch=False)
-            # Then create the user account with the typed FK (Option B)
-            safe_query("INSERT INTO USER_ACCOUNT (username,password_hash,email,role,patient_id) VALUES (%s,%s,%s,'Patient',%s)", (v['user'], v['pass'], v['email'], v['pid']), fetch=False)
-            messagebox.showinfo("Done", "Account Created!"); self.show_login()
-        ttk.Button(f, text="CREATE ACCOUNT", command=do_reg).pack(pady=25); ttk.Button(f, text="Back to Login", command=self.show_login).pack()
+            if not v.get('name') or not v.get('ssn') or not v.get('user') or not v.get('pass') or not v.get('email'):
+                messagebox.showwarning("Missing Fields", "Please fill in all required fields."); return
+            role = role_var.get()
+            try:
+                if role == "Patient":
+                    safe_query("INSERT INTO PATIENT (patient_number,ssn,name,blood_type,sex) VALUES (%s,%s,%s,%s,%s)",
+                               (v['pid'], v['ssn'], v['name'], v.get('blood',''), v.get('sex','Male')), fetch=False)
+                    safe_query("INSERT INTO USER_ACCOUNT (username,password_hash,email,role,patient_id) VALUES (%s,%s,%s,'Patient',%s)",
+                               (v['user'], v['pass'], v['email'], v['pid']), fetch=False)
+                elif role == "Doctor":
+                    safe_query("INSERT INTO DOCTOR (doctor_id,ssn,name,major_area,license_number,department_code,sex) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                               (v['did'], v['ssn'], v['name'], v.get('major',''), v.get('lic',''), v.get('dept','1'), v.get('sex','Male')), fetch=False)
+                    safe_query("INSERT INTO USER_ACCOUNT (username,password_hash,email,role,doctor_id) VALUES (%s,%s,%s,'Doctor',%s)",
+                               (v['user'], v['pass'], v['email'], v['did']), fetch=False)
+                elif role == "Nurse":
+                    safe_query("INSERT INTO NURSE (nurse_id,ssn,name,department_code,phone,sex) VALUES (%s,%s,%s,%s,%s,%s)",
+                               (v['nid'], v['ssn'], v['name'], v.get('dept','1'), v.get('phone',''), v.get('sex','Male')), fetch=False)
+                    safe_query("INSERT INTO USER_ACCOUNT (username,password_hash,email,role,nurse_id) VALUES (%s,%s,%s,'Nurse',%s)",
+                               (v['user'], v['pass'], v['email'], v['nid']), fetch=False)
+                messagebox.showinfo("Done", f"{role} account created successfully!"); self.show_login()
+            except Exception as ex:
+                messagebox.showerror("Error", f"Registration failed: {ex}")
+
+        ttk.Button(f, text="CREATE ACCOUNT", command=do_reg).pack(pady=15)
+        ttk.Button(f, text="Back to Login", command=self.show_login).pack()
 
     def show_admin(self):
         self.clear(); f = tk.Frame(self.container); f.pack(fill="both", expand=True); self.top_bar(f, "Hospital Administration", "🛠️")
@@ -215,5 +264,69 @@ class HospitalApp(tk.Tk):
         ttk.Button(t_presc, text="SAVE & PRINT", command=save_p).pack(anchor="w", pady=10)
         t2 = tk.Frame(nb); nb.add(t2, text=" 🖼️ Patient Scans "); stree = make_tree(t2, ("ID", "Patient", "Path", "Type", "Date"))
         for r in (safe_query("SELECT s.scan_id, p.name, s.file_path, s.file_type, s.uploaded_at FROM SCAN_FILE s JOIN PATIENT p ON s.patient_number=p.patient_number WHERE s.doctor_id=%s", (did,)) or []): stree.insert("", "end", values=list(r.values()))
+
+    def show_nurse(self):
+        self.clear(); nid = self.current_user['profile_id']
+        nurse = safe_query("SELECT * FROM NURSE WHERE nurse_id=%s", (nid,))[0]
+        f = tk.Frame(self.container); f.pack(fill="both", expand=True)
+        self.top_bar(f, f"Nurse Portal: {nurse['name']}", "🏥")
+
+        # ── Stats Bar
+        s_fr = tk.Frame(f, bg="#f8fafc", pady=10); s_fr.pack(fill="x", padx=20)
+        dept = safe_query("SELECT name FROM DEPARTMENT WHERE department_code=%s", (nurse['department_code'],))
+        dept_name = dept[0]['name'] if dept else 'N/A'
+        room_info = 'Not Assigned'
+        if nurse.get('room_id'):
+            rm = safe_query("SELECT room_number, room_type, status FROM ROOM WHERE room_id=%s", (nurse['room_id'],))
+            if rm: room_info = f"{rm[0]['room_number']} ({rm[0]['room_type']}) - {rm[0]['status']}"
+        tk.Label(s_fr, text=f"Department: {dept_name} | Assigned Room: {room_info} | Nurse ID: {nid}",
+                 font=("Segoe UI", 12, "bold"), bg="#f8fafc", fg="#1e3a8a").pack()
+
+        nb = ttk.Notebook(f); nb.pack(fill="both", expand=True, padx=20, pady=20)
+
+        # ── Tab 1: Admitted Patients in My Department
+        t1 = tk.Frame(nb); nb.add(t1, text=" 🛏️ My Department Patients ")
+        tree1 = make_tree(t1, ("Adm.ID", "Patient", "Admitted On", "Status"))
+        for r in (safe_query(
+            "SELECT a.admission_id, p.name, a.admission_date, a.status "
+            "FROM ADMISSION a JOIN PATIENT p ON a.patient_number=p.patient_number "
+            "WHERE a.department_code=%s", (nurse['department_code'],)) or []):
+            tree1.insert("", "end", values=list(r.values()))
+
+        # ── Tab 2: Room Allocation in My Department
+        t2 = tk.Frame(nb); nb.add(t2, text=" 🏨 Room Status ")
+        tree2 = make_tree(t2, ("Room ID", "Room #", "Type", "Status", "Capacity"))
+        for r in (safe_query(
+            "SELECT room_id, room_number, room_type, status, capacity "
+            "FROM ROOM WHERE department_code=%s", (nurse['department_code'],)) or []):
+            tree2.insert("", "end", values=list(r.values()))
+
+        # ── Tab 3: Today's Appointments in My Department
+        t3 = tk.Frame(nb); nb.add(t3, text=" 📋 Department Schedule ")
+        tree3 = make_tree(t3, ("ID", "Patient", "Doctor", "Date/Time", "Status"))
+        for r in (safe_query(
+            "SELECT a.appointment_id, p.name, d.name, a.scheduled_at, a.status "
+            "FROM APPOINTMENT a "
+            "JOIN PATIENT p ON a.patient_number=p.patient_number "
+            "JOIN DOCTOR d ON a.doctor_id=d.doctor_id "
+            "WHERE d.department_code=%s ORDER BY a.scheduled_at", (nurse['department_code'],)) or []):
+            tree3.insert("", "end", values=list(r.values()))
+
+        # ── Tab 4: Send Feedback
+        t_feed = tk.Frame(nb, bg="white", padx=40, pady=30); nb.add(t_feed, text=" 🌟 Send Feedback ")
+        tk.Label(t_feed, text="How was your shift?", font=("Segoe UI", 16, "bold"), bg="white").pack(anchor="w")
+        tk.Label(t_feed, text="Rating (1-5 Stars):", bg="white").pack(anchor="w", pady=(15, 5))
+        rcbo = ttk.Combobox(t_feed, values=["5 - Excellent", "4 - Good", "3 - Average", "2 - Poor", "1 - Terrible"],
+                            state="readonly", width=20); rcbo.pack(anchor="w"); rcbo.current(0)
+        tk.Label(t_feed, text="Subject:", bg="white").pack(anchor="w", pady=(15, 5))
+        sub_e = ttk.Entry(t_feed, width=50); sub_e.pack(anchor="w")
+        tk.Label(t_feed, text="Your Message:", bg="white").pack(anchor="w", pady=(15, 5))
+        msg_t = tk.Text(t_feed, height=6, width=50); msg_t.pack(anchor="w")
+        def send_f():
+            fid = int(datetime.now().timestamp()) % 100000; rating = rcbo.get()[0]
+            safe_query("INSERT INTO CONTACT_FORM (form_id, user_id, subject, message, rating, submitted_at, status) VALUES (%s,%s,%s,%s,%s,NOW(),'Pending')",
+                       (fid, self.current_user['user_id'], sub_e.get(), msg_t.get("1.0", tk.END), rating), fetch=False)
+            messagebox.showinfo("Success", "Feedback submitted!"); sub_e.delete(0, tk.END); msg_t.delete("1.0", tk.END)
+        ttk.Button(t_feed, text="SUBMIT FEEDBACK", command=send_f).pack(anchor="w", pady=20)
 
 if __name__ == "__main__": HospitalApp().mainloop()
