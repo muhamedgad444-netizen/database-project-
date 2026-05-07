@@ -109,11 +109,27 @@ class HospitalApp(tk.Tk):
             tk.Label(cd, text=l, font=("Segoe UI", 10), bg="white", fg="#64748b").pack(); tk.Label(cd, text=v, font=("Segoe UI", 16, "bold"), bg="white", fg=c).pack()
         card(s_fr, "💰 REVENUE", f"${rev:,.2f}", "#16a34a"); card(s_fr, "👥 PATIENTS", pc, "#2563eb"); card(s_fr, "📅 PENDING", ac, "#ea580c")
         nb = ttk.Notebook(f); nb.pack(fill="both", expand=True, padx=20, pady=(10, 20))
-        tabs = [("📋 Visits", "SELECT * FROM vw_AppointmentReport", ("ID", "Patient", "Doctor", "Dept", "Date/Time", "Status", "Fee", "Pay")),
-                ("🛏️ Rooms", "SELECT * FROM vw_RoomAllocation", ("Room", "Type", "Dept", "Status", "Occupant", "Admitted")),
-                ("👥 Personnel", "SELECT employee_id, name, role, department_code FROM EMPLOYEE", ("ID", "Name", "Role", "Dept")),
-                ("📬 Feedback", "SELECT form_id, user_id, rating, subject, status, submitted_at FROM CONTACT_FORM", ("ID", "User", "⭐", "Subject", "Status", "Date"))]
-        for t, s, c in tabs:
+        # ── Visits Tab (with Drop Appointment)
+        t_visits = tk.Frame(nb); nb.add(t_visits, text=" 📋 Visits ")
+        visit_tree = make_tree(t_visits, ("ID", "Patient", "Doctor", "Dept", "Date/Time", "Status", "Fee", "Pay"))
+        def load_visits():
+            for i in visit_tree.get_children(): visit_tree.delete(i)
+            for r in (safe_query("SELECT * FROM vw_AppointmentReport") or []): visit_tree.insert("", "end", values=list(r.values()))
+        load_visits()
+        btn_fr = tk.Frame(t_visits); btn_fr.pack(pady=5)
+        def admin_drop():
+            sel = visit_tree.focus()
+            if not sel: messagebox.showwarning("Warning", "Select an appointment first."); return
+            aid = visit_tree.item(sel, "values")[0]
+            safe_query("UPDATE APPOINTMENT SET status='Cancelled', payment_status='Refunded' WHERE appointment_id=%s", (aid,), fetch=False)
+            messagebox.showinfo("Done", f"Appointment {aid} has been dropped."); load_visits()
+        ttk.Button(btn_fr, text="❌ Drop Appointment", command=admin_drop).pack(side="left", padx=5)
+        ttk.Button(btn_fr, text="✅ Mark Completed", command=lambda: [safe_query("UPDATE APPOINTMENT SET status='Completed' WHERE appointment_id=%s", (visit_tree.item(visit_tree.focus(), "values")[0],), fetch=False), load_visits()]).pack(side="left", padx=5)
+        # ── Other Tabs
+        other_tabs = [("🛏️ Rooms", "SELECT * FROM vw_RoomAllocation", ("Room", "Type", "Dept", "Status", "Occupant", "Admitted")),
+                      ("👥 Personnel", "SELECT employee_id, name, role, department_code FROM EMPLOYEE", ("ID", "Name", "Role", "Dept")),
+                      ("📬 Feedback", "SELECT form_id, user_id, rating, subject, status, submitted_at FROM CONTACT_FORM", ("ID", "User", "⭐", "Subject", "Status", "Date"))]
+        for t, s, c in other_tabs:
             tab = tk.Frame(nb); nb.add(tab, text=f" {t} "); tree = make_tree(tab, c)
             for r in (safe_query(s) or []): tree.insert("", "end", values=list(r.values()))
 
@@ -172,7 +188,16 @@ class HospitalApp(tk.Tk):
         def load():
             for i in tree.get_children(): tree.delete(i)
             for r in (safe_query("SELECT a.appointment_id, p.name, a.scheduled_at, a.status FROM APPOINTMENT a JOIN PATIENT p ON a.patient_number=p.patient_number WHERE a.doctor_id=%s", (did,)) or []): tree.insert("", "end", values=list(r.values()))
-        load(); ttk.Button(t1, text="✅ Mark Completed", command=lambda: [safe_query("UPDATE APPOINTMENT SET status='Completed' WHERE appointment_id=%s", (tree.item(tree.focus(), "values")[0],), fetch=False), load()]).pack(pady=5)
+        load()
+        doc_btn_fr = tk.Frame(t1); doc_btn_fr.pack(pady=5)
+        def doc_drop():
+            sel = tree.focus()
+            if not sel: messagebox.showwarning("Warning", "Select an appointment first."); return
+            aid = tree.item(sel, "values")[0]
+            safe_query("UPDATE APPOINTMENT SET status='Cancelled', payment_status='Refunded' WHERE appointment_id=%s", (aid,), fetch=False)
+            messagebox.showinfo("Done", f"Appointment {aid} has been dropped."); load()
+        ttk.Button(doc_btn_fr, text="✅ Mark Completed", command=lambda: [safe_query("UPDATE APPOINTMENT SET status='Completed' WHERE appointment_id=%s", (tree.item(tree.focus(), "values")[0],), fetch=False), load()]).pack(side="left", padx=5)
+        ttk.Button(doc_btn_fr, text="❌ Drop Appointment", command=doc_drop).pack(side="left", padx=5)
         t_presc = tk.Frame(nb, bg="white", padx=40, pady=30); nb.add(t_presc, text=" 💊 Write Prescription ")
         pats = safe_query("SELECT patient_number, name FROM PATIENT") or []
         p_map = {p['name']: p['patient_number'] for p in pats}
