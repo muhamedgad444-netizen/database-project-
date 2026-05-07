@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hospital Relational Schema — Fixed</title>
+  <title>Hospital Relational Schema — 100% Corrected</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -18,13 +18,12 @@
       --fk: #d97706;
       --uk: #059669;
       --new: #0369a1;
+      --fix: #7c3aed;
       --text: #1e293b;
       --muted: #64748b;
       --shadow: 0 2px 12px rgba(15,39,68,0.08);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       background: var(--bg);
       font-family: 'Syne', sans-serif;
@@ -32,8 +31,6 @@
       padding: 40px 20px;
       min-height: 100vh;
     }
-
-    /* Subtle grid bg */
     body::before {
       content: '';
       position: fixed; inset: 0;
@@ -43,15 +40,13 @@
       background-size: 30px 30px;
       pointer-events: none; z-index: 0;
     }
-
     .page { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; }
-
     header {
       background: var(--primary);
       color: white;
       border-radius: 16px;
       padding: 40px;
-      margin-bottom: 40px;
+      margin-bottom: 24px;
       position: relative;
       overflow: hidden;
     }
@@ -63,160 +58,110 @@
       top: -100px; right: -50px;
       border-radius: 50%;
     }
-    header h1 {
-      font-size: clamp(1.6rem, 3vw, 2.4rem);
-      font-weight: 800;
-      letter-spacing: -1px;
+    header h1 { font-size: clamp(1.4rem, 3vw, 2.2rem); font-weight: 800; letter-spacing: -1px; }
+    header p { color: #94a3b8; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; margin-top: 8px; }
+
+    /* MASTER FIX SUMMARY */
+    .master-fixes {
+      background: #1e1b4b;
+      border-radius: 12px;
+      padding: 22px 26px;
+      margin-bottom: 28px;
+      border: 1px solid #4338ca;
     }
-    header p { color: #94a3b8; font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; margin-top: 8px; }
+    .master-fixes h2 { color: #c7d2fe; font-size: 0.85rem; letter-spacing: 2px; text-transform: uppercase; font-family: 'IBM Plex Mono', monospace; margin-bottom: 14px; }
+    .mf-item { display: flex; gap: 10px; margin-bottom: 8px; align-items: flex-start; font-size: 0.8rem; color: #e0e7ff; font-family: 'IBM Plex Mono', monospace; line-height: 1.5; }
+    .mf-sev { flex-shrink: 0; padding: 1px 8px; border-radius: 3px; font-size: 0.65rem; font-weight: 700; }
+    .sev-crit { background: #dc2626; color: white; }
+    .sev-med { background: #d97706; color: white; }
+    .sev-low { background: #059669; color: white; }
 
     /* LEGEND */
-    .legend {
-      display: flex; flex-wrap: wrap; gap: 12px;
-      margin-bottom: 40px;
-    }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 32px; }
     .leg {
       display: flex; align-items: center; gap: 8px;
       background: white; border: 1px solid var(--border);
-      padding: 8px 16px; border-radius: 8px;
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
+      padding: 6px 14px; border-radius: 8px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.76rem;
       box-shadow: var(--shadow);
     }
-
-    /* SECTION */
     .section-label {
-      font-size: 0.68rem;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      font-family: 'IBM Plex Mono', monospace;
-      color: var(--accent);
-      margin: 40px 0 16px;
-      padding: 6px 0;
+      font-size: 0.66rem; letter-spacing: 4px; text-transform: uppercase;
+      font-family: 'IBM Plex Mono', monospace; color: var(--accent);
+      margin: 36px 0 14px; padding: 6px 0;
       border-bottom: 2px solid var(--accent);
     }
-
-    /* TABLE CARD */
     .tcard {
-      background: var(--surface);
-      border-radius: 12px;
-      margin-bottom: 20px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden;
+      background: var(--surface); border-radius: 12px;
+      margin-bottom: 18px; box-shadow: var(--shadow);
+      border: 1px solid var(--border); overflow: hidden;
       transition: box-shadow 0.2s, transform 0.2s;
     }
     .tcard:hover { box-shadow: 0 8px 30px rgba(15,39,68,0.14); transform: translateY(-1px); }
-
     .tcard-header {
-      padding: 16px 22px;
-      display: flex; align-items: center; gap: 14px;
+      padding: 14px 20px; display: flex; align-items: center; gap: 12px;
       border-bottom: 1px solid var(--border);
       background: linear-gradient(90deg, #f8fafc 0%, white 100%);
     }
     .tcard-num {
-      width: 28px; height: 28px;
-      background: var(--primary);
-      color: white;
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem; font-weight: 600;
-      flex-shrink: 0;
+      width: 26px; height: 26px; background: var(--primary); color: white;
+      border-radius: 6px; display: flex; align-items: center; justify-content: center;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; font-weight: 600; flex-shrink: 0;
     }
-    .tcard-icon { font-size: 1.3rem; }
-    .tcard-name {
-      font-weight: 800; font-size: 1.05rem;
-      color: var(--primary); letter-spacing: 0.5px;
-      font-family: 'IBM Plex Mono', monospace;
-    }
-    .tcard-type {
-      margin-left: auto;
-      font-size: 0.65rem; font-weight: 600;
-      font-family: 'IBM Plex Mono', monospace;
-      border: 1px solid var(--border);
-      padding: 3px 10px; border-radius: 20px;
-      color: var(--muted);
-    }
-
-    /* SCHEMA DISPLAY */
+    .tcard-icon { font-size: 1.2rem; }
+    .tcard-name { font-weight: 800; font-size: 1rem; color: var(--primary); letter-spacing: 0.5px; font-family: 'IBM Plex Mono', monospace; }
+    .tcard-type { margin-left: auto; font-size: 0.63rem; font-weight: 600; font-family: 'IBM Plex Mono', monospace; border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px; color: var(--muted); }
     .schema {
-      padding: 18px 22px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.85rem;
-      line-height: 1.9;
+      padding: 16px 20px;
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.84rem; line-height: 1.9;
     }
-    .schema-line {
-      display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px;
-    }
-    .tname { color: var(--primary); font-weight: 700; font-size: 1rem; }
+    .schema-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px; }
+    .tname { color: var(--primary); font-weight: 700; font-size: 0.98rem; }
     .paren { color: var(--muted); font-size: 1.1rem; }
     .field { color: var(--text); }
-
-    /* BADGES */
     .b {
-      display: inline-flex; align-items: center;
-      font-size: 0.62rem; font-weight: 700;
-      padding: 1px 6px; border-radius: 3px;
-      vertical-align: middle;
-      font-family: 'IBM Plex Mono', monospace;
-      margin-right: 1px;
+      display: inline-flex; align-items: center; font-size: 0.6rem; font-weight: 700;
+      padding: 1px 5px; border-radius: 3px; vertical-align: middle;
+      font-family: 'IBM Plex Mono', monospace; margin-right: 1px;
     }
-    .b-pk { background: rgba(219,39,119,0.1); color: var(--pk); border: 1px solid var(--pk); }
-    .b-fk { background: rgba(217,119,6,0.1); color: var(--fk); border: 1px solid var(--fk); }
-    .b-uk { background: rgba(5,150,105,0.1); color: var(--uk); border: 1px solid var(--uk); }
-    .b-new { background: rgba(3,105,161,0.1); color: var(--new); border: 1px solid var(--new); }
-    .b-fix { background: rgba(124,58,237,0.1); color: var(--accent4); border: 1px solid var(--accent4); }
-    .b-mn { background: rgba(180,83,9,0.1); color: var(--accent2); border: 1px solid var(--accent2); }
-    .b-null { background: rgba(100,116,139,0.1); color: var(--muted); border: 1px solid var(--border); }
+    .b-pk  { background: rgba(219,39,119,0.1); color: var(--pk); border: 1px solid var(--pk); }
+    .b-fk  { background: rgba(217,119,6,0.1);  color: var(--fk); border: 1px solid var(--fk); }
+    .b-uk  { background: rgba(5,150,105,0.1);  color: var(--uk); border: 1px solid var(--uk); }
+    .b-new { background: rgba(3,105,161,0.1);  color: var(--new); border: 1px solid var(--new); }
+    .b-fix { background: rgba(124,58,237,0.1); color: var(--fix); border: 1px solid var(--fix); }
+    .b-mn  { background: rgba(180,83,9,0.1);   color: var(--accent2); border: 1px solid var(--accent2); }
+    .b-null{ background: rgba(100,116,139,0.1);color: var(--muted); border: 1px solid var(--border); }
+    .b-cpk { background: rgba(219,39,119,0.08); color: #9d174d; border: 1px solid #f9a8d4; }
 
-    /* COLUMNS GRID */
-    .cols { padding: 0 22px 18px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+    .cols { padding: 0 20px 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 7px; }
     .col-row {
-      display: flex; align-items: center; gap: 8px;
-      padding: 7px 12px;
-      background: #f8fafc;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 10px; background: #f8fafc;
+      border-radius: 6px; border: 1px solid var(--border);
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.76rem;
     }
     .col-name { color: var(--text); flex: 1; font-weight: 500; }
-    .col-type { color: var(--muted); font-size: 0.7rem; }
-
-    /* FIX NOTES */
+    .col-type { color: var(--muted); font-size: 0.68rem; }
     .fix-note {
-      margin: 6px 22px 14px;
-      padding: 8px 14px;
-      background: rgba(124,58,237,0.06);
-      border-left: 3px solid var(--accent4);
-      border-radius: 0 6px 6px 0;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--accent4);
+      margin: 4px 20px 12px; padding: 7px 12px;
+      background: rgba(124,58,237,0.06); border-left: 3px solid var(--fix);
+      border-radius: 0 6px 6px 0; font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.73rem; color: #4c1d95; line-height: 1.5;
     }
-
-    /* RELATIONSHIP TABLE */
-    .rel-table {
-      width: 100%; border-collapse: collapse;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.8rem;
+    .fix-note code { background: rgba(124,58,237,0.1); padding: 1px 4px; border-radius: 3px; }
+    .acad-note {
+      margin: 4px 20px 12px; padding: 7px 12px;
+      background: rgba(3,105,161,0.05); border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0; font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem; color: #0c2d4a; line-height: 1.5;
     }
-    .rel-table th {
-      background: var(--primary); color: white;
-      padding: 10px 14px; text-align: left;
-      font-weight: 600; font-size: 0.72rem;
-      letter-spacing: 1px; text-transform: uppercase;
-    }
-    .rel-table td { padding: 10px 14px; border-bottom: 1px solid var(--border); }
+    .rel-table { width: 100%; border-collapse: collapse; font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; }
+    .rel-table th { background: var(--primary); color: white; padding: 10px 12px; text-align: left; font-weight: 600; font-size: 0.7rem; letter-spacing: 1px; text-transform: uppercase; }
+    .rel-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
     .rel-table tr:last-child td { border-bottom: none; }
     .rel-table tr:hover td { background: #f8fafc; }
-    .card-wrap { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; }
-
-    footer {
-      text-align: center; margin-top: 60px;
-      color: var(--muted); font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem; padding: 20px;
-      border-top: 1px solid var(--border);
-    }
+    .card-wrap { background: white; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 18px; }
+    footer { text-align: center; margin-top: 60px; color: var(--muted); font-family: 'IBM Plex Mono', monospace; font-size: 0.73rem; padding: 20px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
@@ -224,528 +169,373 @@
 
   <header>
     <h1>🏥 Hospital Relational Schema Mapping</h1>
-    <p>Fixed & Complete Version — All bugs resolved · 19 Tables · Synchronized with Conceptual ERD</p>
+    <p>100% Corrected Version · 19 Tables · All ERD Inconsistencies Resolved · Academic Standard</p>
   </header>
+
+  <!-- MASTER FIX SUMMARY -->
+  <div class="master-fixes">
+    <h2>⚡ Master Fix Log — All Issues Corrected</h2>
+    <div class="mf-item"><span class="mf-sev sev-crit">CRITICAL</span> Circular FK: DEPARTMENT.chairman_id ↔ DOCTOR.department_code — chairman_id is now nullable (NULL allowed at insert time). Without this, you cannot insert either table first.</div>
+    <div class="mf-item"><span class="mf-sev sev-crit">CRITICAL</span> DEPARTMENT_LOCATION PK changed from surrogate (dept_location_id) to composite PK (department_code, location) — correct multivalued attribute mapping per Elmasri &amp; Navathe.</div>
+    <div class="mf-item"><span class="mf-sev sev-crit">CRITICAL</span> GEO_LOCATION PK changed from surrogate (location_id) to composite PK (department_code, latitude, longitude) — same reason.</div>
+    <div class="mf-item"><span class="mf-sev sev-med">MEDIUM</span> USER_ACCOUNT: removed profile_id / profile_type (polymorphic). Replaced with typed 1:1 FK columns (patient_id, doctor_id, nurse_id, employee_id — all nullable). This is the academically correct supertype/subtype relational mapping.</div>
+    <div class="mf-item"><span class="mf-sev sev-med">MEDIUM</span> ERD ↔ Schema sync: APPOINTMENT missing fee, payment_status, refund_date in ERD → added. ADMISSION missing status → added. SCAN_FILE missing description → added. CONTACT_FORM missing rating → added.</div>
+    <div class="mf-item"><span class="mf-sev sev-med">MEDIUM</span> ROOM unique constraint: changed from global UK(room_number) to composite UK(department_code, room_number). Two departments can share room labels.</div>
+    <div class="mf-item"><span class="mf-sev sev-low">MINOR</span> EMPLOYEE department relationship was absent from ERD Group 1 — dangling FK resolved by adding relationship line and DEPARTMENT stub.</div>
+    <div class="mf-item"><span class="mf-sev sev-low">MINOR</span> PRESCRIPTION → PRESCRIPTION_MEDICATION cardinality: changed from o{ (zero-or-more) to |{ (one-or-more). A prescription must contain at least one medication.</div>
+  </div>
 
   <!-- LEGEND -->
   <div class="legend">
     <div class="leg"><span class="b b-pk">PK</span> Primary Key</div>
     <div class="leg"><span class="b b-fk">FK</span> Foreign Key</div>
     <div class="leg"><span class="b b-uk">UK</span> Unique Key</div>
+    <div class="leg"><span class="b b-cpk">CPK</span> Composite PK</div>
     <div class="leg"><span class="b b-new">NEW</span> Added attribute</div>
     <div class="leg"><span class="b b-fix">FIX</span> Bug corrected</div>
     <div class="leg"><span class="b b-mn">M:N</span> Bridge/Junction table</div>
     <div class="leg"><span class="b b-null">NULL</span> Nullable field</div>
   </div>
 
-  <!-- ═══════════════ SECTION 1: PEOPLE ═══════════════ -->
-  <div class="section-label">Section 1 — People & Users</div>
+  <!-- ═══ SECTION 1: PEOPLE ═══ -->
+  <div class="section-label">Section 1 — People &amp; Users</div>
 
   <!-- 1. PATIENT -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">1</div>
-      <span class="tcard-icon">🧑‍⚕️</span>
-      <span class="tcard-name">PATIENT</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">1</div><span class="tcard-icon">🧑‍⚕️</span><span class="tcard-name">PATIENT</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">patient_number</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">patient_number</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
       <div class="col-row"><span class="col-name">address</span><span class="col-type">VARCHAR(255)</span></div>
       <div class="col-row"><span class="col-name">phone</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="col-name">birthdate</span><span class="col-type">DATE</span></div>
-      <div class="col-row"><span class="col-name">sex</span><span class="col-type">CHAR(1)</span></div>
+      <div class="col-row"><span class="col-name">birthdate</span><span class="col-type">DATE NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">sex</span><span class="col-type">CHAR(1) CHECK(M/F)</span></div>
       <div class="col-row"><span class="col-name">medical_history</span><span class="col-type">TEXT</span></div>
       <div class="col-row"><span class="col-name">blood_pressure</span><span class="col-type">VARCHAR(20)</span></div>
       <div class="col-row"><span class="col-name">heart_rate</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="col-name">temperature</span><span class="col-type">FLOAT</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">blood_type</span><span class="col-type">VARCHAR(5)</span></div>
+      <div class="col-row"><span class="col-name">temperature</span><span class="col-type">DECIMAL(4,1)</span></div>
+      <div class="col-row"><span class="col-name">blood_type</span><span class="col-type">VARCHAR(5)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">PATIENT</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> patient_number, <span class="b b-uk">UK</span> ssn, name, address, phone, birthdate, sex, medical_history, blood_pressure, heart_rate, temperature, <span class="b b-new">NEW</span> blood_type</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">PATIENT</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> patient_number, <span class="b b-uk">UK</span> ssn, name, address, phone, birthdate, sex, medical_history, blood_pressure, heart_rate, temperature, blood_type</span><span class="paren">)</span></div>
   </div>
 
   <!-- 2. DOCTOR -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">2</div>
-      <span class="tcard-icon">👨‍⚕️</span>
-      <span class="tcard-name">DOCTOR</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">2</div><span class="tcard-icon">👨‍⚕️</span><span class="tcard-name">DOCTOR</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">doctor_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="b b-new">NEW</span><span class="col-name">license_number</span><span class="col-type">VARCHAR(50)</span></div>
-      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100)</span></div>
-      <div class="col-row"><span class="col-name">sex</span><span class="col-type">CHAR(1)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">doctor_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20) NOT NULL</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">license_number</span><span class="col-type">VARCHAR(50) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">sex</span><span class="col-type">CHAR(1) CHECK(M/F)</span></div>
       <div class="col-row"><span class="col-name">birth_date</span><span class="col-type">DATE</span></div>
       <div class="col-row"><span class="col-name">major_area</span><span class="col-type">VARCHAR(100)</span></div>
       <div class="col-row"><span class="col-name">degree</span><span class="col-type">VARCHAR(100)</span></div>
-      <div class="col-row"><span class="col-name">join_date</span><span class="col-type">DATE</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">consultation_fee</span><span class="col-type">DECIMAL(10,2)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">phone</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
+      <div class="col-row"><span class="col-name">join_date</span><span class="col-type">DATE NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">consultation_fee</span><span class="col-type">DECIMAL(10,2)</span></div>
+      <div class="col-row"><span class="col-name">phone</span><span class="col-type">VARCHAR(20)</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">DOCTOR</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> doctor_id, <span class="b b-uk">UK</span> ssn, <span class="b b-uk">UK</span> <span class="b b-new">NEW</span> license_number, name, sex, birth_date, major_area, degree, <span class="b b-fk">FK</span> department_code, join_date, <span class="b b-new">NEW</span> consultation_fee, <span class="b b-new">NEW</span> phone</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">DOCTOR</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> doctor_id, <span class="b b-uk">UK</span> ssn, <span class="b b-uk">UK</span> license_number, name, sex, birth_date, major_area, degree, join_date, consultation_fee, phone, <span class="b b-fk">FK</span> department_code</span><span class="paren">)</span></div>
   </div>
 
-  <!-- 3. NURSE — FIXED -->
+  <!-- 3. NURSE -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">3</div>
-      <span class="tcard-icon">👩‍⚕️</span>
-      <span class="tcard-name">NURSE</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
-    <div class="fix-note">
-      <span class="b b-fix">FIX</span> Original had <code>phone</code> incorrectly styled as a FK. Fixed: phone is a plain attribute. FK styling now only applies to department_code and room_id.
-    </div>
+    <div class="tcard-header"><div class="tcard-num">3</div><span class="tcard-icon">👩‍⚕️</span><span class="tcard-name">NURSE</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">nurse_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">nurse_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
       <div class="col-row"><span class="col-name">sex</span><span class="col-type">CHAR(1)</span></div>
       <div class="col-row"><span class="col-name">phone</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT NOT NULL</span></div>
       <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">room_id</span><span class="col-type">→ ROOM (nullable)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">NURSE</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> nurse_id, <span class="b b-uk">UK</span> ssn, name, sex, phone, <span class="b b-fk">FK</span> department_code, <span class="b b-fk">FK</span> room_id</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">NURSE</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> nurse_id, <span class="b b-uk">UK</span> ssn, name, sex, phone, <span class="b b-fk">FK</span> department_code, <span class="b b-fk">FK</span> <span class="b b-null">NULL</span> room_id</span><span class="paren">)</span></div>
   </div>
 
   <!-- 4. EMPLOYEE -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">4</div>
-      <span class="tcard-icon">👷</span>
-      <span class="tcard-name">EMPLOYEE</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">4</div><span class="tcard-icon">👷</span><span class="tcard-name">EMPLOYEE</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">employee_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">employee_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">ssn</span><span class="col-type">VARCHAR(20) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
       <div class="col-row"><span class="col-name">role</span><span class="col-type">VARCHAR(100)</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">EMPLOYEE</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> employee_id, <span class="b b-uk">UK</span> ssn, name, role, <span class="b b-fk">FK</span> department_code</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">EMPLOYEE</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> employee_id, <span class="b b-uk">UK</span> ssn, name, role, <span class="b b-fk">FK</span> department_code</span><span class="paren">)</span></div>
   </div>
 
-  <!-- 5. USER_ACCOUNT -->
+  <!-- 5. USER_ACCOUNT — FIXED supertype/subtype -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">5</div>
-      <span class="tcard-icon">👤</span>
-      <span class="tcard-name">USER_ACCOUNT</span>
-      <span class="tcard-type">AUTHENTICATION</span>
+    <div class="tcard-header"><div class="tcard-num">5</div><span class="tcard-icon">👤</span><span class="tcard-name">USER_ACCOUNT</span><span class="tcard-type">SUPERTYPE / AUTHENTICATION</span></div>
+    <div class="fix-note">
+      <span class="b b-fix">FIX CRITICAL</span> Removed polymorphic <code>profile_id + profile_type</code> anti-pattern. Replaced with four typed nullable 1:1 FK columns — one per subtype. Only one of these will be non-null for any given user row. This is the academically correct supertype/subtype relational mapping (Option B — FKs in the supertype table).
     </div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">user_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">username</span><span class="col-type">VARCHAR(50)</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">email</span><span class="col-type">VARCHAR(100)</span></div>
-      <div class="col-row"><span class="col-name">password_hash</span><span class="col-type">VARCHAR(255)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">user_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">username</span><span class="col-type">VARCHAR(50) NOT NULL</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">email</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">password_hash</span><span class="col-type">VARCHAR(255) NOT NULL</span></div>
       <div class="col-row"><span class="col-name">role</span><span class="col-type">ENUM(doctor/patient/nurse/employee/admin)</span></div>
-      <div class="col-row"><span class="col-name">profile_id</span><span class="col-type">INT (polymorphic)</span></div>
-      <div class="col-row"><span class="col-name">profile_type</span><span class="col-type">VARCHAR(20)</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">patient_id</span><span class="col-type">→ PATIENT (nullable)</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR (nullable)</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">nurse_id</span><span class="col-type">→ NURSE (nullable)</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">employee_id</span><span class="col-type">→ EMPLOYEE (nullable)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">USER_ACCOUNT</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> user_id, <span class="b b-uk">UK</span> username, <span class="b b-uk">UK</span> email, password_hash, role, profile_id, profile_type</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="acad-note">Academic constraint: exactly one of (patient_id, doctor_id, nurse_id, employee_id) must be non-null; the rest null. Enforced via CHECK constraint or application logic. CHECK: (patient_id IS NOT NULL)::int + (doctor_id IS NOT NULL)::int + (nurse_id IS NOT NULL)::int + (employee_id IS NOT NULL)::int = 1 (or 0 for admin).</div>
+    <div class="schema"><span class="tname">USER_ACCOUNT</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> user_id, <span class="b b-uk">UK</span> username, <span class="b b-uk">UK</span> email, password_hash, role, <span class="b b-fk">FK</span><span class="b b-null">NULL</span> patient_id, <span class="b b-fk">FK</span><span class="b b-null">NULL</span> doctor_id, <span class="b b-fk">FK</span><span class="b b-null">NULL</span> nurse_id, <span class="b b-fk">FK</span><span class="b b-null">NULL</span> employee_id</span><span class="paren">)</span></div>
   </div>
 
-  <!-- ═══════════════ SECTION 2: DEPARTMENT & FACILITY ═══════════════ -->
-  <div class="section-label">Section 2 — Department & Facility</div>
+  <!-- ═══ SECTION 2: DEPARTMENT & FACILITY ═══ -->
+  <div class="section-label">Section 2 — Department &amp; Facility</div>
 
   <!-- 6. DEPARTMENT -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">6</div>
-      <span class="tcard-icon">🏢</span>
-      <span class="tcard-name">DEPARTMENT</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">6</div><span class="tcard-icon">🏢</span><span class="tcard-name">DEPARTMENT</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="fix-note">
-      <span class="b b-fix">FIX</span> Clarified: <code>chairman_id</code> is a FK referencing <code>DOCTOR.doctor_id</code>. This is a self-referencing 1:1 relationship (a doctor chairs one department).
+      <span class="b b-fix">FIX CRITICAL</span> <code>chairman_id</code> is now explicitly <span class="b b-null">NULL</span>-able. This resolves the circular FK insertion deadlock — a DEPARTMENT must be insertable before any DOCTOR references it, and before a chairman is appointed.
     </div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">department_code</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">name</span><span class="col-type">VARCHAR(100)</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="b b-uk">UK</span><span class="col-name">chairman_id</span><span class="col-type">→ DOCTOR.doctor_id</span></div>
-      <div class="col-row"><span class="col-name">chairman_start_date</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">department_code</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">name</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="b b-uk">UK</span><span class="b b-null">NULL</span><span class="col-name">chairman_id</span><span class="col-type">→ DOCTOR (nullable, 1:1)</span></div>
+      <div class="col-row"><span class="b b-null">NULL</span><span class="col-name">chairman_start_date</span><span class="col-type">DATE (null when no chairman)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">DEPARTMENT</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> department_code, <span class="b b-uk">UK</span> name, <span class="b b-fk">FK</span> <span class="b b-uk">UK</span> chairman_id → DOCTOR, chairman_start_date</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">DEPARTMENT</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> department_code, <span class="b b-uk">UK</span> name, <span class="b b-fk">FK</span><span class="b b-uk">UK</span><span class="b b-null">NULL</span> chairman_id → DOCTOR, chairman_start_date</span><span class="paren">)</span></div>
   </div>
 
-  <!-- 7. DEPARTMENT_LOCATION -->
+  <!-- 7. DEPARTMENT_LOCATION — FIXED composite PK -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">7</div>
-      <span class="tcard-icon">🏛️</span>
-      <span class="tcard-name">DEPARTMENT_LOCATION</span>
-      <span class="tcard-type">MULTIVALUED ATTRIBUTE</span>
+    <div class="tcard-header"><div class="tcard-num">7</div><span class="tcard-icon">🏛️</span><span class="tcard-name">DEPARTMENT_LOCATION</span><span class="tcard-type">MULTIVALUED ATTRIBUTE</span></div>
+    <div class="fix-note">
+      <span class="b b-fix">FIX CRITICAL</span> Replaced surrogate PK <code>dept_location_id</code> with composite PK <code>(department_code, location)</code>. Per Elmasri &amp; Navathe, the correct relational mapping of a multivalued attribute is a new relation whose PK = {original entity PK + the attribute}. A surrogate PK here would lose this constraint and allow duplicate location values for the same department.
     </div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">dept_location_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
-      <div class="col-row"><span class="col-name">location</span><span class="col-type">VARCHAR(255)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">location</span><span class="col-type">VARCHAR(255)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">DEPARTMENT_LOCATION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> dept_location_id, <span class="b b-fk">FK</span> department_code, location</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">DEPARTMENT_LOCATION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span><span class="b b-fk">FK</span> department_code, <span class="b b-pk">PK</span> location</span><span class="paren">)</span></div>
   </div>
 
-  <!-- 8. GEO_LOCATION -->
+  <!-- 8. GEO_LOCATION — FIXED composite PK -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">8</div>
-      <span class="tcard-icon">📍</span>
-      <span class="tcard-name">GEO_LOCATION</span>
-      <span class="tcard-type">LOCATION SUPPORT</span>
+    <div class="tcard-header"><div class="tcard-num">8</div><span class="tcard-icon">📍</span><span class="tcard-name">GEO_LOCATION</span><span class="tcard-type">LOCATION SUPPORT</span></div>
+    <div class="fix-note">
+      <span class="b b-fix">FIX CRITICAL</span> Replaced surrogate PK <code>location_id</code> with composite PK <code>(department_code, latitude, longitude)</code>. Same multivalued-attribute mapping rule as DEPARTMENT_LOCATION. The combination of department + coordinates uniquely identifies each geo point.
     </div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">location_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
-      <div class="col-row"><span class="col-name">latitude</span><span class="col-type">DECIMAL(10,8)</span></div>
-      <div class="col-row"><span class="col-name">longitude</span><span class="col-type">DECIMAL(11,8)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">latitude</span><span class="col-type">DECIMAL(10,8)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">longitude</span><span class="col-type">DECIMAL(11,8)</span></div>
       <div class="col-row"><span class="col-name">address</span><span class="col-type">VARCHAR(255)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">GEO_LOCATION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> location_id, <span class="b b-fk">FK</span> department_code, latitude, longitude, address</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">GEO_LOCATION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span><span class="b b-fk">FK</span> department_code, <span class="b b-pk">PK</span> latitude, <span class="b b-pk">PK</span> longitude, address</span><span class="paren">)</span></div>
   </div>
 
-  <!-- 9. ROOM -->
+  <!-- 9. ROOM — FIXED composite unique -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">9</div>
-      <span class="tcard-icon">🏨</span>
-      <span class="tcard-name">ROOM</span>
-      <span class="tcard-type">STRONG ENTITY</span>
+    <div class="tcard-header"><div class="tcard-num">9</div><span class="tcard-icon">🏨</span><span class="tcard-name">ROOM</span><span class="tcard-type">STRONG ENTITY</span></div>
+    <div class="fix-note">
+      <span class="b b-fix">FIX</span> Unique constraint on <code>room_number</code> changed from a global UK to a composite unique <code>UK(department_code, room_number)</code>. Two different departments can legitimately share the same room label (e.g. both have "Room 101"). A global unique would incorrectly reject this.
     </div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">room_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
-      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">room_number</span><span class="col-type">VARCHAR(20)</span></div>
-      <div class="col-row"><span class="col-name">room_type</span><span class="col-type">ENUM(general/ICU/OR/etc.)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">room_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT NOT NULL</span></div>
+      <div class="col-row"><span class="b b-uk">UK</span><span class="col-name">room_number</span><span class="col-type">VARCHAR(20) — UK with dept_code</span></div>
+      <div class="col-row"><span class="col-name">room_type</span><span class="col-type">ENUM(general/ICU/OR/radiology/etc.)</span></div>
       <div class="col-row"><span class="col-name">status</span><span class="col-type">ENUM(available/occupied)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">capacity</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span class="col-name">capacity</span><span class="col-type">INT DEFAULT 1</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">ROOM</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> room_id, <span class="b b-fk">FK</span> department_code, <span class="b b-uk">UK</span> room_number, room_type, status, <span class="b b-new">NEW</span> capacity</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="acad-note">Composite unique constraint: UNIQUE(department_code, room_number)</div>
+    <div class="schema"><span class="tname">ROOM</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> room_id, <span class="b b-fk">FK</span> department_code, room_number, room_type, status, capacity — UNIQUE(department_code, room_number)</span><span class="paren">)</span></div>
   </div>
 
-  <!-- ═══════════════ SECTION 3: CLINICAL ═══════════════ -->
+  <!-- ═══ SECTION 3: CLINICAL ═══ -->
   <div class="section-label">Section 3 — Clinical / Medical</div>
 
   <!-- 10. ADMISSION -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">10</div>
-      <span class="tcard-icon">🏥</span>
-      <span class="tcard-name">ADMISSION</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
-    <div class="fix-note">
-      <span class="b b-fix">FIX</span> ERD previously omitted the <code>department_code [FK]</code>. Added here — a patient is admitted TO a specific department (required by business rules).
-    </div>
+    <div class="tcard-header"><div class="tcard-num">10</div><span class="tcard-icon">🏥</span><span class="tcard-name">ADMISSION</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">admission_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT</span></div>
-      <div class="col-row"><span class="col-name">admission_date</span><span class="col-type">DATE</span></div>
-      <div class="col-row"><span class="b b-null">NULL</span><span class="col-name">discharge_date</span><span class="col-type">DATE (nullable)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">status</span><span class="col-type">ENUM(admitted/discharged)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">admission_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">department_code</span><span class="col-type">→ DEPARTMENT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">admission_date</span><span class="col-type">DATE NOT NULL</span></div>
+      <div class="col-row"><span class="b b-null">NULL</span><span class="col-name">discharge_date</span><span class="col-type">DATE (null = still admitted)</span></div>
+      <div class="col-row"><span class="col-name">status</span><span class="col-type">ENUM(admitted/discharged)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">ADMISSION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> admission_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> department_code, admission_date, discharge_date, <span class="b b-new">NEW</span> status</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">ADMISSION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> admission_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> department_code, admission_date, discharge_date, status</span><span class="paren">)</span></div>
   </div>
 
   <!-- 11. APPOINTMENT -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">11</div>
-      <span class="tcard-icon">📅</span>
-      <span class="tcard-name">APPOINTMENT</span>
-      <span class="tcard-type">MAPS M:N → APPOINTMENT</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">11</div><span class="tcard-icon">📅</span><span class="tcard-name">APPOINTMENT</span><span class="tcard-type">M:N PATIENT ↔ DOCTOR</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">appointment_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR</span></div>
-      <div class="col-row"><span class="col-name">scheduled_at</span><span class="col-type">DATETIME</span></div>
-      <div class="col-row"><span class="col-name">status</span><span class="col-type">ENUM(scheduled/cancelled/done)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">fee</span><span class="col-type">DECIMAL(10,2)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">payment_status</span><span class="col-type">ENUM(pending/paid/refunded)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="b b-null">NULL</span><span class="col-name">refund_date</span><span class="col-type">DATE (nullable)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">appointment_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">scheduled_at</span><span class="col-type">DATETIME NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">status</span><span class="col-type">ENUM(scheduled/cancelled/completed)</span></div>
+      <div class="col-row"><span class="col-name">fee</span><span class="col-type">DECIMAL(10,2)</span></div>
+      <div class="col-row"><span class="col-name">payment_status</span><span class="col-type">ENUM(pending/paid/refunded)</span></div>
+      <div class="col-row"><span class="b b-null">NULL</span><span class="col-name">refund_date</span><span class="col-type">DATE (null unless refunded)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">APPOINTMENT</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> appointment_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> doctor_id, scheduled_at, status, <span class="b b-new">NEW</span> fee, <span class="b b-new">NEW</span> payment_status, <span class="b b-new">NEW</span> refund_date</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">APPOINTMENT</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> appointment_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> doctor_id, scheduled_at, status, fee, payment_status, refund_date</span><span class="paren">)</span></div>
   </div>
 
   <!-- 12. MEDICAL_RECORD -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">12</div>
-      <span class="tcard-icon">📜</span>
-      <span class="tcard-name">MEDICAL_RECORD</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">12</div><span class="tcard-icon">📜</span><span class="tcard-name">MEDICAL_RECORD</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">record_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">record_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR NOT NULL</span></div>
       <div class="col-row"><span class="col-name">diagnosis</span><span class="col-type">TEXT</span></div>
       <div class="col-row"><span class="col-name">treatment</span><span class="col-type">TEXT</span></div>
-      <div class="col-row"><span class="col-name">record_date</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="col-name">record_date</span><span class="col-type">DATE NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">MEDICAL_RECORD</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> record_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> doctor_id, diagnosis, treatment, record_date</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">MEDICAL_RECORD</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> record_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> doctor_id, diagnosis, treatment, record_date</span><span class="paren">)</span></div>
   </div>
 
   <!-- 13. SCAN_FILE -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">13</div>
-      <span class="tcard-icon">📂</span>
-      <span class="tcard-name">SCAN_FILE</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
-    <div class="fix-note">
-      <span class="b b-fix">FIX</span> <code>doctor_id</code> is now explicitly nullable — a scan may be uploaded by admin without a specific doctor assigned.
-    </div>
+    <div class="tcard-header"><div class="tcard-num">13</div><span class="tcard-icon">📂</span><span class="tcard-name">SCAN_FILE</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">scan_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">scan_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT NOT NULL</span></div>
       <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR (nullable)</span></div>
-      <div class="col-row"><span class="col-name">file_path</span><span class="col-type">VARCHAR(500)</span></div>
+      <div class="col-row"><span class="col-name">file_path</span><span class="col-type">VARCHAR(500) NOT NULL</span></div>
       <div class="col-row"><span class="col-name">file_type</span><span class="col-type">VARCHAR(50)</span></div>
-      <div class="col-row"><span class="col-name">uploaded_at</span><span class="col-type">DATETIME</span></div>
+      <div class="col-row"><span class="col-name">uploaded_at</span><span class="col-type">DATETIME NOT NULL</span></div>
       <div class="col-row"><span class="col-name">description</span><span class="col-type">TEXT</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">SCAN_FILE</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> scan_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span> <span class="b b-null">NULL</span> doctor_id, file_path, file_type, uploaded_at, description</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">SCAN_FILE</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> scan_id, <span class="b b-fk">FK</span> patient_number, <span class="b b-fk">FK</span><span class="b b-null">NULL</span> doctor_id, file_path, file_type, uploaded_at, description</span><span class="paren">)</span></div>
   </div>
 
-  <!-- ═══════════════ SECTION 4: PRESCRIPTION ═══════════════ -->
-  <div class="section-label">Section 4 — Prescription & Medication</div>
+  <!-- ═══ SECTION 4: PRESCRIPTION ═══ -->
+  <div class="section-label">Section 4 — Prescription &amp; Medication</div>
 
   <!-- 14. PRESCRIPTION -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">14</div>
-      <span class="tcard-icon">💊</span>
-      <span class="tcard-name">PRESCRIPTION</span>
-      <span class="tcard-type">MAPS M:N WRITES</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">14</div><span class="tcard-icon">💊</span><span class="tcard-name">PRESCRIPTION</span><span class="tcard-type">MAPS M:N WRITES</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">prescription_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
-      <div class="col-row"><span class="col-name">prescription_date</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">prescription_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">prescription_date</span><span class="col-type">DATE NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">PRESCRIPTION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> prescription_id, <span class="b b-fk">FK</span> doctor_id, <span class="b b-fk">FK</span> patient_number, prescription_date</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">PRESCRIPTION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> prescription_id, <span class="b b-fk">FK</span> doctor_id, <span class="b b-fk">FK</span> patient_number, prescription_date</span><span class="paren">)</span></div>
   </div>
 
   <!-- 15. MEDICATION -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">15</div>
-      <span class="tcard-icon">🧪</span>
-      <span class="tcard-name">MEDICATION</span>
-      <span class="tcard-type">STRONG ENTITY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">15</div><span class="tcard-icon">🧪</span><span class="tcard-name">MEDICATION</span><span class="tcard-type">STRONG ENTITY</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">medication_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100)</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">medication_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="col-name">name</span><span class="col-type">VARCHAR(100) NOT NULL</span></div>
       <div class="col-row"><span class="col-name">description</span><span class="col-type">TEXT</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">MEDICATION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> medication_id, name, description</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">MEDICATION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> medication_id, name, description</span><span class="paren">)</span></div>
   </div>
 
   <!-- 16. PRESCRIPTION_MEDICATION -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">16</div>
-      <span class="tcard-icon">📦</span>
-      <span class="tcard-name">PRESCRIPTION_MEDICATION</span>
-      <span class="tcard-type"><span class="b b-mn">M:N</span> BRIDGE TABLE</span>
+    <div class="tcard-header"><div class="tcard-num">16</div><span class="tcard-icon">📦</span><span class="tcard-name">PRESCRIPTION_MEDICATION</span><span class="tcard-type"><span class="b b-mn">M:N</span> BRIDGE TABLE</span></div>
+    <div class="fix-note">
+      <span class="b b-fix">FIX</span> Cardinality on the PRESCRIPTION side corrected to "one-or-more" (|{) — a prescription must contain at least one medication. Zero-or-more (o{) was incorrect.
     </div>
     <div class="cols">
       <div class="col-row"><span class="b b-pk">PK</span><span class="b b-fk">FK</span><span class="col-name">prescription_id</span><span class="col-type">→ PRESCRIPTION</span></div>
       <div class="col-row"><span class="b b-pk">PK</span><span class="b b-fk">FK</span><span class="col-name">medication_id</span><span class="col-type">→ MEDICATION</span></div>
-      <div class="col-row"><span class="col-name">times_per_day</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="col-name">dose</span><span class="col-type">VARCHAR(50)</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="col-name">directions</span><span class="col-type">TEXT</span></div>
-      <div class="col-row"><span class="col-name">start_date</span><span class="col-type">DATE</span></div>
-      <div class="col-row"><span class="col-name">end_date</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="col-name">times_per_day</span><span class="col-type">INT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">dose</span><span class="col-type">VARCHAR(50) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">directions</span><span class="col-type">TEXT</span></div>
+      <div class="col-row"><span class="col-name">start_date</span><span class="col-type">DATE NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">end_date</span><span class="col-type">DATE NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">PRESCRIPTION_MEDICATION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span><span class="b b-fk">FK</span> prescription_id, <span class="b b-pk">PK</span><span class="b b-fk">FK</span> medication_id, times_per_day, dose, <span class="b b-new">NEW</span> directions, start_date, end_date</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">PRESCRIPTION_MEDICATION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span><span class="b b-fk">FK</span> prescription_id, <span class="b b-pk">PK</span><span class="b b-fk">FK</span> medication_id, times_per_day, dose, directions, start_date, end_date</span><span class="paren">)</span></div>
   </div>
 
-  <!-- ═══════════════ SECTION 5: M:N BRIDGE TABLES ═══════════════ -->
-  <div class="section-label">Section 5 — M:N Bridge & Junction Tables</div>
+  <!-- ═══ SECTION 5: M:N BRIDGE ═══ -->
+  <div class="section-label">Section 5 — M:N Bridge &amp; Junction Tables</div>
 
   <!-- 17. EXAMINES -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">17</div>
-      <span class="tcard-icon">🤝</span>
-      <span class="tcard-name">EXAMINES</span>
-      <span class="tcard-type"><span class="b b-mn">M:N</span> DOCTOR ↔ PATIENT</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">17</div><span class="tcard-icon">🤝</span><span class="tcard-name">EXAMINES</span><span class="tcard-type"><span class="b b-mn">M:N</span> DOCTOR ↔ PATIENT</span></div>
     <div class="cols">
       <div class="col-row"><span class="b b-pk">PK</span><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR</span></div>
       <div class="col-row"><span class="b b-pk">PK</span><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
-      <div class="col-row"><span class="col-name">hours_per_week</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span class="col-name">hours_per_week</span><span class="col-type">INT NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">EXAMINES</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span><span class="b b-fk">FK</span> doctor_id, <span class="b b-pk">PK</span><span class="b b-fk">FK</span> patient_number, hours_per_week</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">EXAMINES</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span><span class="b b-fk">FK</span> doctor_id, <span class="b b-pk">PK</span><span class="b b-fk">FK</span> patient_number, hours_per_week</span><span class="paren">)</span></div>
   </div>
 
   <!-- 18. ROOM_RESERVATION -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">18</div>
-      <span class="tcard-icon">🛎️</span>
-      <span class="tcard-name">ROOM_RESERVATION</span>
-      <span class="tcard-type">TERNARY RELATIONSHIP TABLE</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">18</div><span class="tcard-icon">🛎️</span><span class="tcard-name">ROOM_RESERVATION</span><span class="tcard-type">TERNARY RELATIONSHIP TABLE</span></div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">reservation_id</span><span class="col-type">INT</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">room_id</span><span class="col-type">→ ROOM</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR</span></div>
-      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT</span></div>
-      <div class="col-row"><span class="col-name">start_date</span><span class="col-type">DATE</span></div>
-      <div class="col-row"><span class="col-name">end_date</span><span class="col-type">DATE</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">reservation_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">room_id</span><span class="col-type">→ ROOM NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">doctor_id</span><span class="col-type">→ DOCTOR NOT NULL</span></div>
+      <div class="col-row"><span class="b b-fk">FK</span><span class="col-name">patient_number</span><span class="col-type">→ PATIENT NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">start_date</span><span class="col-type">DATE NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">end_date</span><span class="col-type">DATE NOT NULL</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">ROOM_RESERVATION</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> reservation_id, <span class="b b-fk">FK</span> room_id, <span class="b b-fk">FK</span> doctor_id, <span class="b b-fk">FK</span> patient_number, start_date, end_date</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">ROOM_RESERVATION</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> reservation_id, <span class="b b-fk">FK</span> room_id, <span class="b b-fk">FK</span> doctor_id, <span class="b b-fk">FK</span> patient_number, start_date, end_date</span><span class="paren">)</span></div>
   </div>
 
-  <!-- ═══════════════ SECTION 6: SYSTEM / FEEDBACK ═══════════════ -->
-  <div class="section-label">Section 6 — System & Feedback</div>
+  <!-- ═══ SECTION 6: SYSTEM / FEEDBACK ═══ -->
+  <div class="section-label">Section 6 — System &amp; Feedback</div>
 
   <!-- 19. CONTACT_FORM -->
   <div class="tcard">
-    <div class="tcard-header">
-      <div class="tcard-num">19</div>
-      <span class="tcard-icon">🌟</span>
-      <span class="tcard-name">CONTACT_FORM</span>
-      <span class="tcard-type">FEEDBACK / INQUIRY</span>
-    </div>
+    <div class="tcard-header"><div class="tcard-num">19</div><span class="tcard-icon">🌟</span><span class="tcard-name">CONTACT_FORM</span><span class="tcard-type">FEEDBACK / INQUIRY</span></div>
     <div class="fix-note">
-      <span class="b b-fix">FIX</span> <code>user_id</code> is now explicitly nullable — allows guest/visitor submissions without a user account. Without this, unregistered visitors cannot submit inquiries.
+      <span class="b b-fix">FIX</span> Added missing <code>rating</code> attribute (INT 1-5, nullable) — was present in schema but missing from ERD Group 4. Now both are in sync.
     </div>
     <div class="cols">
-      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">form_id</span><span class="col-type">INT</span></div>
+      <div class="col-row"><span class="b b-pk">PK</span><span class="col-name">form_id</span><span class="col-type">INT AUTO_INCREMENT</span></div>
       <div class="col-row"><span class="b b-fk">FK</span><span class="b b-null">NULL</span><span class="col-name">user_id</span><span class="col-type">→ USER_ACCOUNT (nullable)</span></div>
-      <div class="col-row"><span class="col-name">subject</span><span class="col-type">VARCHAR(200)</span></div>
-      <div class="col-row"><span class="col-name">message</span><span class="col-type">TEXT</span></div>
-      <div class="col-row"><span class="b b-new">NEW</span><span class="b b-null">NULL</span><span class="col-name">rating</span><span class="col-type">INT [1–5] (nullable)</span></div>
-      <div class="col-row"><span class="col-name">submitted_at</span><span class="col-type">DATETIME</span></div>
+      <div class="col-row"><span class="col-name">subject</span><span class="col-type">VARCHAR(200) NOT NULL</span></div>
+      <div class="col-row"><span class="col-name">message</span><span class="col-type">TEXT NOT NULL</span></div>
+      <div class="col-row"><span class="b b-null">NULL</span><span class="col-name">rating</span><span class="col-type">INT CHECK(1-5) nullable</span></div>
+      <div class="col-row"><span class="col-name">submitted_at</span><span class="col-type">DATETIME NOT NULL</span></div>
       <div class="col-row"><span class="col-name">status</span><span class="col-type">ENUM(pending/resolved)</span></div>
     </div>
-    <div class="schema">
-      <span class="tname">CONTACT_FORM</span> <span class="paren">(</span>
-      <span class="field"><span class="b b-pk">PK</span> form_id, <span class="b b-fk">FK</span> <span class="b b-null">NULL</span> user_id, subject, message, <span class="b b-new">NEW</span> rating[1-5], submitted_at, status</span>
-      <span class="paren">)</span>
-    </div>
+    <div class="schema"><span class="tname">CONTACT_FORM</span> <span class="paren">(</span><span class="field"><span class="b b-pk">PK</span> form_id, <span class="b b-fk">FK</span><span class="b b-null">NULL</span> user_id, subject, message, rating[1-5 nullable], submitted_at, status</span><span class="paren">)</span></div>
   </div>
 
-  <!-- ═══════════════ RELATIONSHIPS SUMMARY ═══════════════ -->
+  <!-- RELATIONSHIPS SUMMARY -->
   <div class="section-label">Relationships Summary Table</div>
   <div class="card-wrap">
     <table class="rel-table">
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Relationship Name</th>
-          <th>Entities Involved</th>
-          <th>Cardinality</th>
-          <th>Mapped To</th>
-        </tr>
+        <tr><th>#</th><th>Relationship</th><th>Entities</th><th>Cardinality</th><th>Mapped To</th><th>Fix Applied</th></tr>
       </thead>
       <tbody>
-        <tr><td>1</td><td>EXAMINES</td><td>DOCTOR ↔ PATIENT</td><td>M:N</td><td>EXAMINES table</td></tr>
-        <tr><td>2</td><td>WRITES</td><td>DOCTOR ↔ PATIENT</td><td>M:N</td><td>PRESCRIPTION table</td></tr>
-        <tr><td>3</td><td>CONTAINS</td><td>PRESCRIPTION ↔ MEDICATION</td><td>M:N</td><td>PRESCRIPTION_MEDICATION table</td></tr>
-        <tr><td>4</td><td>WORKS_IN</td><td>DOCTOR → DEPARTMENT</td><td>N:1</td><td>department_code FK on DOCTOR</td></tr>
-        <tr><td>5</td><td>MANAGES (Chairman)</td><td>DOCTOR ↔ DEPARTMENT</td><td>1:1</td><td>chairman_id FK on DEPARTMENT</td></tr>
-        <tr><td>6</td><td>SCHEDULES (Appointment)</td><td>PATIENT ↔ DOCTOR</td><td>M:N</td><td>APPOINTMENT table</td></tr>
-        <tr><td>7</td><td>ADMITTED_TO</td><td>PATIENT → DEPARTMENT</td><td>M:N</td><td>ADMISSION table</td></tr>
-        <tr><td>8</td><td>RESERVES_ROOM</td><td>DOCTOR + PATIENT + ROOM</td><td>Ternary</td><td>ROOM_RESERVATION table</td></tr>
-        <tr><td>9</td><td>BELONGS_TO</td><td>ROOM → DEPARTMENT</td><td>N:1</td><td>department_code FK on ROOM</td></tr>
-        <tr><td>10</td><td>ASSIGNED_TO</td><td>NURSE → DEPT + ROOM</td><td>N:1</td><td>FKs on NURSE</td></tr>
-        <tr><td>11</td><td>HAS_LOCATION (Multi)</td><td>DEPARTMENT → DEPT_LOCATION</td><td>1:N</td><td>DEPARTMENT_LOCATION table</td></tr>
-        <tr><td>12</td><td>HAS_GEO</td><td>DEPARTMENT → GEO_LOCATION</td><td>1:N</td><td>GEO_LOCATION table</td></tr>
-        <tr><td>13</td><td>HAS_ACCOUNT</td><td>DOCTOR/PATIENT/NURSE → USER_ACCOUNT</td><td>1:1</td><td>profile_id + profile_type (polymorphic)</td></tr>
-        <tr><td>14</td><td>SUBMITS</td><td>USER_ACCOUNT → CONTACT_FORM</td><td>1:N</td><td>user_id FK (nullable) on CONTACT_FORM</td></tr>
-        <tr><td>15</td><td>UPLOADS</td><td>PATIENT → SCAN_FILE</td><td>1:N</td><td>patient_number FK on SCAN_FILE</td></tr>
+        <tr><td>1</td><td>EXAMINES</td><td>DOCTOR ↔ PATIENT</td><td>M:N</td><td>EXAMINES table (composite PK)</td><td>—</td></tr>
+        <tr><td>2</td><td>WRITES</td><td>DOCTOR ↔ PATIENT</td><td>M:N</td><td>PRESCRIPTION table</td><td>—</td></tr>
+        <tr><td>3</td><td>CONTAINS</td><td>PRESCRIPTION ↔ MEDICATION</td><td>M:N (min 1)</td><td>PRESCRIPTION_MEDICATION</td><td>✅ Min cardinality corrected to 1</td></tr>
+        <tr><td>4</td><td>WORKS_IN</td><td>DOCTOR → DEPARTMENT</td><td>N:1</td><td>department_code FK on DOCTOR</td><td>—</td></tr>
+        <tr><td>5</td><td>MANAGES (Chairman)</td><td>DEPARTMENT ↔ DOCTOR</td><td>1:1 optional</td><td>chairman_id FK (nullable) on DEPARTMENT</td><td>✅ Made nullable — circular FK fix</td></tr>
+        <tr><td>6</td><td>SCHEDULES (Appointment)</td><td>PATIENT ↔ DOCTOR</td><td>M:N</td><td>APPOINTMENT table</td><td>✅ Added fee, payment_status, refund_date</td></tr>
+        <tr><td>7</td><td>ADMITTED_TO</td><td>PATIENT → DEPARTMENT</td><td>N:1 per stay</td><td>ADMISSION table</td><td>✅ Added status attribute</td></tr>
+        <tr><td>8</td><td>RESERVES_ROOM</td><td>DOCTOR + PATIENT + ROOM</td><td>Ternary</td><td>ROOM_RESERVATION table</td><td>—</td></tr>
+        <tr><td>9</td><td>BELONGS_TO</td><td>ROOM → DEPARTMENT</td><td>N:1</td><td>department_code FK on ROOM</td><td>✅ Composite unique(dept, room_number)</td></tr>
+        <tr><td>10</td><td>ASSIGNED_TO</td><td>NURSE → DEPT + ROOM</td><td>N:1</td><td>FKs on NURSE (room nullable)</td><td>—</td></tr>
+        <tr><td>11</td><td>HAS_LOCATION</td><td>DEPARTMENT → DEPT_LOCATION</td><td>1:N</td><td>DEPARTMENT_LOCATION (composite PK)</td><td>✅ Composite PK replaces surrogate</td></tr>
+        <tr><td>12</td><td>HAS_GEO</td><td>DEPARTMENT → GEO_LOCATION</td><td>1:N</td><td>GEO_LOCATION (composite PK)</td><td>✅ Composite PK replaces surrogate</td></tr>
+        <tr><td>13</td><td>HAS_ACCOUNT</td><td>USER_ACCOUNT → subtypes</td><td>1:1 each</td><td>4 typed nullable FKs on USER_ACCOUNT</td><td>✅ Polymorphic anti-pattern removed</td></tr>
+        <tr><td>14</td><td>SUBMITS</td><td>USER_ACCOUNT → CONTACT_FORM</td><td>1:N</td><td>user_id FK (nullable) on CONTACT_FORM</td><td>✅ rating attribute added to ERD</td></tr>
+        <tr><td>15</td><td>UPLOADS</td><td>PATIENT → SCAN_FILE</td><td>1:N</td><td>patient_number FK on SCAN_FILE</td><td>✅ description attribute added to ERD</td></tr>
       </tbody>
     </table>
   </div>
 
-  <footer>Hospital Information System · Relational Schema Mapping · Fixed Version · 19 Tables · 15 Relationships · All Bugs Resolved</footer>
+  <footer>Hospital Information System · 100% Corrected Relational Schema · 19 Tables · 15 Relationships · All Academic Issues Resolved</footer>
 </div>
 </body>
 </html>

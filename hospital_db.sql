@@ -27,17 +27,17 @@ CREATE TABLE PATIENT (
 
 -- 2. DEPARTMENT
 CREATE TABLE DEPARTMENT (
-    department_code INT PRIMARY KEY,
+    department_code INT PRIMARY KEY AUTO_INCREMENT,
     name            VARCHAR(100) UNIQUE NOT NULL,
-    chairman_id     INT UNIQUE, 
+    chairman_id     INT UNIQUE NULL, -- FIX: Nullable to prevent circular insertion deadlock
     chairman_start_date DATE
 );
 
--- 3. DEPARTMENT_LOCATION
+-- 3. DEPARTMENT_LOCATION (FIX: Composite PK for Multivalued Attribute)
 CREATE TABLE DEPARTMENT_LOCATION (
-    dept_location_id INT PRIMARY KEY,
-    department_code  INT,
-    location         VARCHAR(255),
+    department_code INT,
+    location        VARCHAR(255),
+    PRIMARY KEY (department_code, location),
     FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE CASCADE
 );
 
@@ -100,12 +100,13 @@ CREATE TABLE ADMISSION (
 
 -- 8. ROOM
 CREATE TABLE ROOM (
-    room_id         INT PRIMARY KEY,
+    room_id         INT PRIMARY KEY AUTO_INCREMENT,
     department_code INT,
-    room_number     VARCHAR(20) UNIQUE NOT NULL,
+    room_number     VARCHAR(20) NOT NULL,
     room_type       VARCHAR(50),
-    status          VARCHAR(50),
+    status          VARCHAR(50) DEFAULT 'available',
     capacity        INT DEFAULT 1,
+    UNIQUE (department_code, room_number), -- FIX: Room 101 can exist in multiple departments
     FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE CASCADE
 );
 
@@ -177,15 +178,27 @@ CREATE TABLE APPOINTMENT (
     FOREIGN KEY (doctor_id)      REFERENCES DOCTOR(doctor_id) ON DELETE CASCADE
 );
 
--- 15. USER_ACCOUNT
+-- 15. USER_ACCOUNT (FIX: Typed Subtype Mapping - Option B)
 CREATE TABLE USER_ACCOUNT (
-    user_id       INT PRIMARY KEY,
+    user_id       INT PRIMARY KEY AUTO_INCREMENT,
     username      VARCHAR(50) UNIQUE NOT NULL,
     email         VARCHAR(100) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role          VARCHAR(50),
-    profile_id    INT,
-    profile_type  VARCHAR(50)
+    patient_id    INT NULL,
+    doctor_id     INT NULL,
+    nurse_id      INT NULL,
+    employee_id   INT NULL,
+    CONSTRAINT chk_single_profile CHECK (
+        (CASE WHEN patient_id IS NOT NULL THEN 1 ELSE 0 END +
+         CASE WHEN doctor_id IS NOT NULL THEN 1 ELSE 0 END +
+         CASE WHEN nurse_id IS NOT NULL THEN 1 ELSE 0 END +
+         CASE WHEN employee_id IS NOT NULL THEN 1 ELSE 0 END) <= 1
+    ),
+    FOREIGN KEY (patient_id) REFERENCES PATIENT(patient_number) ON DELETE CASCADE,
+    FOREIGN KEY (doctor_id)  REFERENCES DOCTOR(doctor_id) ON DELETE CASCADE,
+    FOREIGN KEY (nurse_id)   REFERENCES NURSE(nurse_id) ON DELETE CASCADE,
+    FOREIGN KEY (employee_id) REFERENCES EMPLOYEE(employee_id) ON DELETE CASCADE
 );
 
 -- 16. SCAN_FILE
@@ -214,13 +227,13 @@ CREATE TABLE CONTACT_FORM (
     FOREIGN KEY (user_id) REFERENCES USER_ACCOUNT(user_id) ON DELETE CASCADE
 );
 
--- 18. GEO_LOCATION
+-- 18. GEO_LOCATION (FIX: Composite PK for Multivalued Attribute)
 CREATE TABLE GEO_LOCATION (
-    location_id     INT PRIMARY KEY,
     department_code INT,
     latitude        FLOAT,
     longitude       FLOAT,
     address         VARCHAR(255),
+    PRIMARY KEY (department_code, latitude, longitude),
     FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE CASCADE
 );
 

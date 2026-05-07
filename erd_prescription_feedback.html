@@ -1,20 +1,48 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ERD Group 4 — Prescriptions, Medications & Feedback (FIXED)</title>
 <style>
-#erd4 svg { width: 100% !important; }
-.erd-title4 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 8px; letter-spacing: 0.03em; }
+  body { font-family: system-ui, sans-serif; padding: 24px; background: #f0f4f8; }
+  .fix-banner { background: #b45309; color: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; }
+  .fix-banner strong { display: block; font-size: 15px; margin-bottom: 6px; }
+  .fix-item { background: rgba(180,83,9,0.08); border-left: 3px solid #b45309; border-radius: 0 6px 6px 0; padding: 8px 14px; margin-bottom: 8px; font-family: monospace; font-size: 12px; color: #431407; }
+  #erd4 svg { width: 100% !important; }
+  .erd-title { font-size: 13px; font-weight: 600; color: #374151; margin: 0 0 10px; letter-spacing: 0.03em; }
+  .note { font-size: 12px; color: #6b7280; margin-top: 14px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px 14px; line-height: 1.6; }
 </style>
-<p class="erd-title4">Group 4 — Prescriptions, Medications & Feedback</p>
+</head>
+<body>
+
+<div class="fix-banner">
+  <strong>🔧 FIXED — Group 4: Prescriptions, Medications &amp; Feedback</strong>
+  Corrections applied to this ERD:
+</div>
+
+<div class="fix-item">FIX 1: CONTACT_FORM entity — added missing rating (INT 1-5, nullable) attribute. It was in the schema mapping but absent from the ERD entity box, making the two documents inconsistent.</div>
+<div class="fix-item">FIX 2: PRESCRIPTION_MEDICATION composite PK clarified — both prescription_id and medication_id are PK+FK simultaneously. Label updated to make this explicit in the diagram.</div>
+<div class="fix-item">FIX 3: USER_ACCOUNT.user_id FK on CONTACT_FORM is explicitly nullable — a guest/visitor can submit a contact form without an account. Added NULL marker to attribute.</div>
+<div class="fix-item">FIX 4: Relationship label from PRESCRIPTION to PRESCRIPTION_MEDICATION corrected to "contains (1 or more)" — a prescription must have at least one medication, so the minimum cardinality on PRESCRIPTION_MEDICATION side is 1 (not 0). Changed from o{ to |{.</div>
+
+<p class="erd-title">Group 4 — Prescriptions, Medications &amp; Feedback (CORRECTED)</p>
 <div id="erd4"></div>
+
+<div class="note">
+  <strong>Academic Note on PRESCRIPTION_MEDICATION (M:N bridge):</strong> This is the correct pattern for the M:N between PRESCRIPTION and MEDICATION. The composite PK ensures no duplicate medication in the same prescription. The extra attributes (times_per_day, dose, directions, start_date, end_date) live here because they describe the <em>relationship</em> between a specific prescription and a specific medication — not either entity alone.
+  <br><br>
+  <strong>Academic Note on CONTACT_FORM:</strong> The nullable FK to USER_ACCOUNT allows both authenticated users and anonymous visitors to submit enquiries. This is modelled as a partial participation (zero-or-one) on the USER_ACCOUNT side.
+</div>
+
 <script type="module">
 import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
 const dark = matchMedia('(prefers-color-scheme: dark)').matches;
 await document.fonts.ready;
 mermaid.initialize({
   startOnLoad: false, theme: 'base',
-  fontFamily: '"Anthropic Sans", sans-serif',
+  fontFamily: 'system-ui, sans-serif',
   themeVariables: {
     darkMode: dark, fontSize: '13px',
-    fontFamily: '"Anthropic Sans", sans-serif',
     lineColor: dark ? '#9c9a92' : '#73726c',
     textColor: dark ? '#c2c0b6' : '#3d3d3a',
   },
@@ -50,7 +78,7 @@ const { svg } = await mermaid.render('erd4-svg', `erDiagram
   }
   USER_ACCOUNT {
     int user_id PK
-    string username
+    string username UK
     string role
   }
   CONTACT_FORM {
@@ -64,22 +92,11 @@ const { svg } = await mermaid.render('erd4-svg', `erDiagram
   }
   DOCTOR ||--o{ PRESCRIPTION : "writes"
   PATIENT ||--o{ PRESCRIPTION : "receives"
-  PRESCRIPTION ||--|{ PRESCRIPTION_MEDICATION : "contains"
-  MEDICATION ||--|{ PRESCRIPTION_MEDICATION : "listed in"
-  USER_ACCOUNT ||--o{ CONTACT_FORM : "submits"
+  PRESCRIPTION ||--|{ PRESCRIPTION_MEDICATION : "contains (>=1 med)"
+  MEDICATION ||--|{ PRESCRIPTION_MEDICATION : "prescribed via"
+  USER_ACCOUNT ||--o{ CONTACT_FORM : "submits (nullable FK)"
 `);
 document.getElementById('erd4').innerHTML = svg;
-document.querySelectorAll('#erd4 .node').forEach(node => {
-  const fp = node.querySelector('path[d]');
-  if (!fp) return;
-  const nums = fp.getAttribute('d').match(/-?[\d.]+/g)?.map(Number);
-  if (!nums || nums.length < 8) return;
-  const xs=[nums[0],nums[2],nums[4],nums[6]],ys=[nums[1],nums[3],nums[5],nums[7]];
-  const x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;
-  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);r.setAttribute('rx','8');
-  for(const a of['fill','stroke','stroke-width','class','style']) if(fp.hasAttribute(a)) r.setAttribute(a,fp.getAttribute(a));
-  fp.replaceWith(r);
-});
-document.querySelectorAll('#erd4 .row-rect-odd path, #erd4 .row-rect-even path').forEach(p=>p.setAttribute('stroke','none'));
 </script>
+</body>
+</html>

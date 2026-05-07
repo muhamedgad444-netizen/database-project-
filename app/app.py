@@ -66,10 +66,17 @@ class HospitalApp(tk.Tk):
         tk.Label(card, text="Password", bg="white").pack(anchor="w"); ep = ttk.Entry(card, font=("Segoe UI", 14), show="*", width=30); ep.pack(pady=(0, 30))
         def do_login():
             res = safe_query("SELECT * FROM USER_ACCOUNT WHERE username=%s AND password_hash=%s", (eu.get().strip(), ep.get().strip()))
-            if res: self.current_user = res[0]; r = self.current_user['role']; 
-            if r == "Admin": self.show_admin()
-            elif r == "Patient": self.show_patient()
-            elif r == "Doctor": self.show_doctor()
+            if res: 
+                self.current_user = res[0]; r = self.current_user['role']; 
+                # FIX: Logic for Option B Subtype Mapping
+                if r == "Admin": self.show_admin()
+                else:
+                    # Detect which ID to use based on the role
+                    self.current_user['profile_id'] = (res[0]['patient_id'] or res[0]['doctor_id'] or 
+                                                       res[0]['nurse_id'] or res[0]['employee_id'])
+                    if r == "Patient": self.show_patient()
+                    elif r == "Doctor": self.show_doctor()
+                    else: messagebox.showerror("Error", "Invalid role configuration.")
             else: messagebox.showerror("Error", "Invalid credentials.")
         ttk.Button(card, text="SECURE LOGIN", command=do_login).pack(fill="x")
         ttk.Button(card, text="REGISTER NEW ACCOUNT", command=self.show_register).pack(fill="x", pady=(10,0))

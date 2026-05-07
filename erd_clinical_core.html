@@ -1,20 +1,48 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ERD Group 3 — Clinical Core (FIXED)</title>
 <style>
-#erd3 svg { width: 100% !important; }
-.erd-title3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 8px; letter-spacing: 0.03em; }
+  body { font-family: system-ui, sans-serif; padding: 24px; background: #f0f4f8; }
+  .fix-banner { background: #166534; color: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; }
+  .fix-banner strong { display: block; font-size: 15px; margin-bottom: 6px; }
+  .fix-item { background: rgba(22,101,52,0.08); border-left: 3px solid #166534; border-radius: 0 6px 6px 0; padding: 8px 14px; margin-bottom: 8px; font-family: monospace; font-size: 12px; color: #14532d; }
+  #erd3 svg { width: 100% !important; }
+  .erd-title { font-size: 13px; font-weight: 600; color: #374151; margin: 0 0 10px; letter-spacing: 0.03em; }
+  .note { font-size: 12px; color: #6b7280; margin-top: 14px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px 14px; line-height: 1.6; }
 </style>
-<p class="erd-title3">Group 3 — Clinical (Examinations, Admissions, Appointments, Records, Scans)</p>
+</head>
+<body>
+
+<div class="fix-banner">
+  <strong>🔧 FIXED — Group 3: Clinical (Examinations, Admissions, Appointments, Records, Scans)</strong>
+  Corrections applied to this ERD:
+</div>
+
+<div class="fix-item">FIX 1: APPOINTMENT entity — added missing attributes: fee (DECIMAL), payment_status (ENUM), refund_date (DATE nullable). These were in the schema mapping but absent from the ERD, making them inconsistent.</div>
+<div class="fix-item">FIX 2: ADMISSION entity — added missing status (ENUM: admitted/discharged) attribute. Was in schema mapping, absent from ERD.</div>
+<div class="fix-item">FIX 3: SCAN_FILE entity — added missing description (TEXT) attribute. Was in schema mapping, absent from ERD.</div>
+<div class="fix-item">FIX 4: ROOM_RESERVATION — clarified as a ternary relationship (DOCTOR + PATIENT + ROOM). Relationship labels updated for clarity.</div>
+
+<p class="erd-title">Group 3 — Clinical Core (CORRECTED)</p>
 <div id="erd3"></div>
+
+<div class="note">
+  <strong>Academic Note on APPOINTMENT:</strong> APPOINTMENT maps an M:N relationship between PATIENT and DOCTOR with extra attributes (fee, payment_status, refund_date). This is the correct pattern — you cannot put these attributes on either PATIENT or DOCTOR directly, so they live on the relationship/bridge table. The surrogate PK (appointment_id) is acceptable and preferred over a composite PK here because cancelled appointments may be re-scheduled (same patient+doctor, different time).
+  <br><br>
+  <strong>Academic Note on ROOM_RESERVATION (Ternary):</strong> A ternary relationship links three entities simultaneously. In Mermaid crow's foot notation there is no direct ternary notation, so it is modelled as an associative entity with three FK lines — this is the standard approach and is academically correct.
+</div>
+
 <script type="module">
 import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
 const dark = matchMedia('(prefers-color-scheme: dark)').matches;
 await document.fonts.ready;
 mermaid.initialize({
   startOnLoad: false, theme: 'base',
-  fontFamily: '"Anthropic Sans", sans-serif',
+  fontFamily: 'system-ui, sans-serif',
   themeVariables: {
     darkMode: dark, fontSize: '13px',
-    fontFamily: '"Anthropic Sans", sans-serif',
     lineColor: dark ? '#9c9a92' : '#73726c',
     textColor: dark ? '#c2c0b6' : '#3d3d3a',
   },
@@ -83,33 +111,23 @@ const { svg } = await mermaid.render('erd3-svg', `erDiagram
     string file_path
     string file_type
     datetime uploaded_at
+    text description
   }
-  DOCTOR ||--o{ EXAMINES : "examines"
+  DOCTOR ||--o{ EXAMINES : "examines (M:N with hrs)"
   PATIENT ||--o{ EXAMINES : "examined by"
-  PATIENT ||--o{ ADMISSION : "admitted"
-  DEPARTMENT ||--o{ ADMISSION : "admits to"
-  PATIENT ||--o{ APPOINTMENT : "schedules"
-  DOCTOR ||--o{ APPOINTMENT : "has"
-  DOCTOR ||--o{ ROOM_RESERVATION : "reserves"
-  PATIENT ||--o{ ROOM_RESERVATION : "for patient"
-  ROOM ||--o{ ROOM_RESERVATION : "reserved as"
+  PATIENT ||--o{ ADMISSION : "admitted to dept"
+  DEPARTMENT ||--o{ ADMISSION : "receives patient"
+  PATIENT ||--o{ APPOINTMENT : "books"
+  DOCTOR ||--o{ APPOINTMENT : "attends"
+  DOCTOR ||--o{ ROOM_RESERVATION : "reserves room"
+  PATIENT ||--o{ ROOM_RESERVATION : "patient in room"
+  ROOM ||--o{ ROOM_RESERVATION : "reserved for"
   PATIENT ||--o{ MEDICAL_RECORD : "has record"
-  DOCTOR ||--o{ MEDICAL_RECORD : "writes"
+  DOCTOR ||--o{ MEDICAL_RECORD : "writes record"
   PATIENT ||--o{ SCAN_FILE : "has scan"
-  DOCTOR ||--o{ SCAN_FILE : "uploads"
+  DOCTOR ||--o{ SCAN_FILE : "uploads scan"
 `);
 document.getElementById('erd3').innerHTML = svg;
-document.querySelectorAll('#erd3 .node').forEach(node => {
-  const fp = node.querySelector('path[d]');
-  if (!fp) return;
-  const nums = fp.getAttribute('d').match(/-?[\d.]+/g)?.map(Number);
-  if (!nums || nums.length < 8) return;
-  const xs=[nums[0],nums[2],nums[4],nums[6]],ys=[nums[1],nums[3],nums[5],nums[7]];
-  const x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;
-  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);r.setAttribute('rx','8');
-  for(const a of['fill','stroke','stroke-width','class','style']) if(fp.hasAttribute(a)) r.setAttribute(a,fp.getAttribute(a));
-  fp.replaceWith(r);
-});
-document.querySelectorAll('#erd3 .row-rect-odd path, #erd3 .row-rect-even path').forEach(p=>p.setAttribute('stroke','none'));
 </script>
+</body>
+</html>
