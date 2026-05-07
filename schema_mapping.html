@@ -25,12 +25,12 @@
         
         <div class="card">
             <div class="title">📋 1. PATIENT</div>
-            <div class="code">PATIENT ( <span class="pk">patient_number [PK]</span>, <span class="uk">ssn [UK]</span>, name, address, phone, birthdate, sex, medical_history, blood_pressure, heart_rate, temperature )</div>
+            <div class="code">PATIENT ( <span class="pk">patient_number [PK]</span>, <span class="uk">ssn [UK]</span>, name, address, phone, birthdate, sex, medical_history, blood_pressure, heart_rate, temperature, <span class="new-feat">blood_type</span> )</div>
         </div>
         
         <div class="card">
             <div class="title">🩺 2. DOCTOR</div>
-            <div class="code">DOCTOR ( <span class="pk">doctor_id [PK]</span>, <span class="uk">ssn [UK]</span>, name, sex, birth_date, major_area, degree, <span class="fk">department_id [FK]</span>, join_date, <span class="new-feat">consultation_fee</span> )</div>
+            <div class="code">DOCTOR ( <span class="pk">doctor_id [PK]</span>, <span class="uk">ssn [UK]</span>, name, sex, birth_date, major_area, degree, <span class="fk">department_code [FK]</span>, join_date, <span class="new-feat">consultation_fee, phone, license_number [UK]</span> )</div>
         </div>
         
         <div class="card">
@@ -45,7 +45,7 @@
         
         <div class="card">
             <div class="title">🤝 5. EXAMINES (M:N)</div>
-            <div class="code">EXAMINES ( <span class="fk">doctor_id [FK]</span>, <span class="fk">patient_number [FK]</span>, hours_per_week )</div>
+            <div class="code">EXAMINES ( <span class="pk">doctor_id [PK/FK]</span>, <span class="pk">patient_number [PK/FK]</span>, hours_per_week )</div>
         </div>
         
         <div class="card">
@@ -58,9 +58,69 @@
             <div class="code">USER_ACCOUNT ( <span class="pk">user_id [PK]</span>, <span class="uk">username [UK]</span>, <span class="uk">email [UK]</span>, password_hash, role, profile_id, profile_type )</div>
         </div>
 
+        <div class="card">
+            <div class="title">🏥 8. ADMISSION</div>
+            <div class="code">ADMISSION ( <span class="pk">admission_id [PK]</span>, <span class="fk">patient_number [FK]</span>, <span class="fk">department_code [FK]</span>, admission_date, discharge_date, <span class="new-feat">status</span> )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">🏨 9. ROOM</div>
+            <div class="code">ROOM ( <span class="pk">room_id [PK]</span>, <span class="fk">department_code [FK]</span>, <span class="uk">room_number [UK]</span>, room_type, status, <span class="new-feat">capacity</span> )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">🛎️ 10. ROOM_RESERVATION</div>
+            <div class="code">ROOM_RESERVATION ( <span class="pk">reservation_id [PK]</span>, <span class="fk">room_id [FK]</span>, <span class="fk">doctor_id [FK]</span>, <span class="fk">patient_number [FK]</span>, start_date, end_date )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">💊 11. PRESCRIPTION</div>
+            <div class="code">PRESCRIPTION ( <span class="pk">prescription_id [PK]</span>, <span class="fk">doctor_id [FK]</span>, <span class="fk">patient_number [FK]</span>, prescription_date )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">🧪 12. MEDICATION</div>
+            <div class="code">MEDICATION ( <span class="pk">medication_id [PK]</span>, name, description )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">📦 13. PRESCRIPTION_MEDICATION</div>
+            <div class="code">PRESCRIPTION_MEDICATION ( <span class="pk">prescription_id [PK/FK]</span>, <span class="pk">medication_id [PK/FK]</span>, times_per_day, dose, <span class="new-feat">directions</span>, start_date, end_date )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">👩‍⚕️ 14. NURSE</div>
+            <div class="code">NURSE ( <span class="pk">nurse_id [PK]</span>, name, <span class="uk">ssn [UK]</span>, sex, <span class="fk">department_code [FK], room_id [FK], phone</span> )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">👷 15. EMPLOYEE</div>
+            <div class="code">EMPLOYEE ( <span class="pk">employee_id [PK]</span>, name, <span class="uk">ssn [UK]</span>, role, <span class="fk">department_code [FK]</span> )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">📍 16. GEO_LOCATION</div>
+            <div class="code">GEO_LOCATION ( <span class="pk">location_id [PK]</span>, <span class="fk">department_code [FK]</span>, latitude, longitude, address )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">🏢 17. DEPARTMENT_LOCATION</div>
+            <div class="code">DEPARTMENT_LOCATION ( <span class="pk">dept_location_id [PK]</span>, <span class="fk">department_code [FK]</span>, location )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">🏛️ 18. DEPARTMENT</div>
+            <div class="code">DEPARTMENT ( <span class="pk">department_code [PK]</span>, <span class="uk">name [UK]</span>, <span class="fk">chairman_id [FK, UK]</span>, chairman_start_date )</div>
+        </div>
+
+        <div class="card">
+            <div class="title">📜 19. MEDICAL_RECORD</div>
+            <div class="code">MEDICAL_RECORD ( <span class="pk">record_id [PK]</span>, <span class="fk">patient_number [FK]</span>, <span class="fk">doctor_id [FK]</span>, diagnosis, treatment, record_date )</div>
+        </div>
+
         <p style="text-align: center; color: #94a3b8; font-size: 0.9rem; margin-top: 4rem;">
             Generated by Hospital Information System (HIS) Architect. 
-            Verification Hash: HIS-SYNC-A++-FINAL
+            Verification Hash: HIS-SYNC-A++-CERTIFIED-V10000
         </p>
     </div>
 </body>

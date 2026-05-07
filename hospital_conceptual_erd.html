@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital HIS - Conceptual ERD (Phase 1)</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 40px; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { color: #1e3a8a; text-align: center; }
+        .legend { display: flex; justify-content: center; gap: 30px; margin: 30px 0; font-weight: bold; }
+        .leg-item { display: flex; align-items: center; gap: 8px; }
+        .rect { width: 20px; height: 20px; background: #e0f2fe; border: 2px solid #0369a1; }
+        .oval { width: 20px; height: 20px; background: #f0fdf4; border: 2px solid #15803d; border-radius: 50%; }
+        .diam { width: 20px; height: 20px; background: #fff7ed; border: 2px solid #c2410c; transform: rotate(45deg); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 Hospital Information System - Phase 1: Conceptual ERD</h1>
+        <p style="text-align:center; color:#64748b;">(Chen Notation: Entities, Attributes, and Relationships)</p>
+        
+        <div class="legend">
+            <div class="leg-item"><div class="rect"></div> Entity</div>
+            <div class="leg-item"><div class="oval"></div> Attribute</div>
+            <div class="leg-item"><div class="diam"></div> Relationship</div>
+        </div>
+
+        <div class="mermaid">
+        erDiagram
+            PATIENT ||--o{ EXAMINES : "Examines (Relationship)"
+            DOCTOR ||--o{ EXAMINES : "is Examined by"
+            
+            PATIENT {
+                string name "Attribute (Oval)"
+                int patient_number "PK (Attribute)"
+                string ssn "UK (Attribute)"
+                string history "Attribute"
+            }
+            
+            DOCTOR {
+                string name "Attribute (Oval)"
+                int doctor_id "PK (Attribute)"
+                string major_area "Attribute"
+                float fee "Attribute"
+            }
+
+            DEPARTMENT ||--|{ DOCTOR : "Works In"
+            DEPARTMENT {
+                int code "PK (Attribute)"
+                string name "UK (Attribute)"
+            }
+
+            ADMISSION ||--|| PATIENT : "for"
+            ADMISSION {
+                int admission_id "PK"
+                date start_date "Attribute"
+            }
+        </div>
+
+        <div style="margin-top:50px; background:#eff6ff; padding:20px; border-radius:10px; color:#1e40af;">
+            <strong>💡 Presentation Tip:</strong> Explain that Phase 1 focuses on the <strong>Business Rules</strong> (e.g., "A Patient is examined by many Doctors") before we worry about the specific SQL tables.
+        </div>
+    </div>
+    <script>mermaid.initialize({ startOnLoad: true, theme: 'neutral' });</script>
+</body>
+</html>

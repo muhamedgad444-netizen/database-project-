@@ -38,6 +38,7 @@ const diagram = `erDiagram
     float blood_pressure
     float heart_rate
     float temperature
+    string blood_type
   }
   DEPARTMENT {
     int department_code PK
@@ -58,8 +59,11 @@ const diagram = `erDiagram
     date birth_date
     string major_area
     string degree
-    int department_id FK
+    int department_code FK
     date join_date
+    float consultation_fee
+    string phone
+    string license_number UK
   }
   ADMISSION {
     int admission_id PK
@@ -67,6 +71,7 @@ const diagram = `erDiagram
     int department_code FK
     date admission_date
     date discharge_date
+    string status
   }
   ROOM {
     int room_id PK
@@ -74,6 +79,7 @@ const diagram = `erDiagram
     string room_number UK
     string room_type
     string status
+    int capacity
   }
   ROOM_RESERVATION {
     int reservation_id PK
@@ -84,8 +90,8 @@ const diagram = `erDiagram
     date end_date
   }
   EXAMINES {
-    int doctor_id FK
-    int patient_number FK
+    int doctor_id PK
+    int patient_number PK
     float hours_per_week
   }
   PRESCRIPTION {
@@ -100,10 +106,11 @@ const diagram = `erDiagram
     string description
   }
   PRESCRIPTION_MEDICATION {
-    int prescription_id FK
-    int medication_id FK
+    int prescription_id PK
+    int medication_id PK
     int times_per_day
     float dose
+    string directions
     date start_date
     date end_date
   }
@@ -123,6 +130,8 @@ const diagram = `erDiagram
     string ssn UK
     string sex
     int department_code FK
+    int room_id FK
+    string phone
   }
   EMPLOYEE {
     int employee_id PK
@@ -152,6 +161,7 @@ const diagram = `erDiagram
     int user_id FK
     string subject
     text message
+    int rating
     datetime submitted_at
     string status
   }
@@ -164,12 +174,21 @@ const diagram = `erDiagram
     datetime uploaded_at
     string description
   }
+  MEDICAL_RECORD {
+    int record_id PK
+    int patient_number FK
+    int doctor_id FK
+    text diagnosis
+    text treatment
+    date record_date
+  }
 
   PATIENT ||--o{ ADMISSION : "admitted to"
   DEPARTMENT ||--o{ ADMISSION : "receives"
   DEPARTMENT ||--o{ DEPARTMENT_LOCATION : "has"
   DEPARTMENT ||--o{ ROOM : "contains"
   DEPARTMENT ||--o{ NURSE : "employs"
+  NURSE }o--o| ROOM : "assigned to"
   DEPARTMENT ||--o{ EMPLOYEE : "has"
   DEPARTMENT ||--o{ GEO_LOCATION : "located at"
   DOCTOR }o--|| DEPARTMENT : "joins"
@@ -188,6 +207,8 @@ const diagram = `erDiagram
   DOCTOR ||--o{ SCAN_FILE : "uploads"
   USER_ACCOUNT ||--o{ CONTACT_FORM : "submits"
   DEPARTMENT ||--|| DOCTOR : "chaired by"
+  PATIENT ||--o{ MEDICAL_RECORD : "has"
+  DOCTOR ||--o{ MEDICAL_RECORD : "creates"
 `;
 try {
   const { svg } = await mermaid.render('erd-svg', diagram);

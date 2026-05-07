@@ -19,14 +19,17 @@ CREATE TABLE PATIENT (
     medical_history TEXT,
     blood_pressure  FLOAT,
     heart_rate      FLOAT,
-    temperature     FLOAT
+    temperature     FLOAT,
+    blood_type      VARCHAR(5),
+    CONSTRAINT chk_patient_sex CHECK (sex IN ('Male', 'Female', 'Other')),
+    CONSTRAINT chk_vitals CHECK (blood_pressure > 0 AND heart_rate > 0 AND temperature > 0)
 );
 
 -- 2. DEPARTMENT
 CREATE TABLE DEPARTMENT (
     department_code INT PRIMARY KEY,
     name            VARCHAR(100) UNIQUE NOT NULL,
-    chairman_id     INT, 
+    chairman_id     INT UNIQUE, 
     chairman_start_date DATE
 );
 
@@ -47,10 +50,13 @@ CREATE TABLE DOCTOR (
     birth_date      DATE,
     major_area      VARCHAR(100),
     degree          VARCHAR(100),
-    department_id   INT,
+    department_code INT,
     join_date       DATE,
     consultation_fee FLOAT DEFAULT 200.0,
-    FOREIGN KEY (department_id) REFERENCES DEPARTMENT(department_code) ON DELETE SET NULL
+    phone           VARCHAR(20),
+    license_number  VARCHAR(50) UNIQUE,
+    CONSTRAINT chk_doctor_sex CHECK (sex IN ('Male', 'Female', 'Other')),
+    FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE SET NULL
 );
 
 -- 5. NURSE 
@@ -60,7 +66,11 @@ CREATE TABLE NURSE (
     ssn             VARCHAR(20) UNIQUE NOT NULL,
     sex             VARCHAR(10),
     department_code INT,
-    FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE SET NULL
+    room_id         INT,
+    phone           VARCHAR(20),
+    CONSTRAINT chk_nurse_sex CHECK (sex IN ('Male', 'Female', 'Other')),
+    FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE SET NULL,
+    FOREIGN KEY (room_id) REFERENCES ROOM(room_id) ON DELETE SET NULL
 );
 
 -- 6. EMPLOYEE
@@ -83,6 +93,7 @@ CREATE TABLE ADMISSION (
     department_code INT,
     admission_date  DATE,
     discharge_date  DATE,
+    status          VARCHAR(50) DEFAULT 'Active',
     FOREIGN KEY (patient_number)  REFERENCES PATIENT(patient_number) ON DELETE CASCADE,
     FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE CASCADE
 );
@@ -94,6 +105,7 @@ CREATE TABLE ROOM (
     room_number     VARCHAR(20) UNIQUE NOT NULL,
     room_type       VARCHAR(50),
     status          VARCHAR(50),
+    capacity        INT DEFAULT 1,
     FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE CASCADE
 );
 
@@ -143,6 +155,7 @@ CREATE TABLE PRESCRIPTION_MEDICATION (
     medication_id   INT,
     times_per_day   INT,
     dose            FLOAT,
+    directions      TEXT,
     start_date      DATE,
     end_date        DATE,
     PRIMARY KEY (prescription_id, medication_id),
@@ -197,6 +210,7 @@ CREATE TABLE CONTACT_FORM (
     rating       INT, -- NEW: 1-5 Star Rating
     submitted_at DATETIME,
     status       VARCHAR(50),
+    CONSTRAINT chk_rating CHECK (rating BETWEEN 1 AND 5),
     FOREIGN KEY (user_id) REFERENCES USER_ACCOUNT(user_id) ON DELETE CASCADE
 );
 
@@ -210,6 +224,18 @@ CREATE TABLE GEO_LOCATION (
     FOREIGN KEY (department_code) REFERENCES DEPARTMENT(department_code) ON DELETE CASCADE
 );
 
+-- 19. MEDICAL_RECORD (NEW: Requirement 5)
+CREATE TABLE MEDICAL_RECORD (
+    record_id      INT PRIMARY KEY,
+    patient_number INT,
+    doctor_id      INT,
+    diagnosis      TEXT,
+    treatment      TEXT,
+    record_date    DATE,
+    FOREIGN KEY (patient_number) REFERENCES PATIENT(patient_number) ON DELETE CASCADE,
+    FOREIGN KEY (doctor_id)      REFERENCES DOCTOR(doctor_id) ON DELETE CASCADE
+);
+
 -- ============================================================
 -- SAMPLE DATA (THE CONNECTED UNIVERSE)
 -- ============================================================
@@ -219,7 +245,7 @@ INSERT INTO DEPARTMENT (department_code, name) VALUES
 (1, 'Radiology'), (2, 'Cardiology'), (3, 'Dentistry'), (4, 'Veterinary'), (5, 'Orthopedics');
 
 -- 2. DOCTORS (All 5 Specialists)
-INSERT INTO DOCTOR (doctor_id, ssn, name, department_id, consultation_fee, major_area) VALUES 
+INSERT INTO DOCTOR (doctor_id, ssn, name, department_code, consultation_fee, major_area) VALUES 
 (1, 'D101', 'Dr. Ahmed', 1, 300.0, 'Radiologist'),
 (2, 'D102', 'Dr. Sara', 2, 350.0, 'Cardiologist'),
 (3, 'D103', 'Dr. Khaled', 3, 150.0, 'Dentist'),
@@ -251,12 +277,20 @@ INSERT INTO APPOINTMENT (appointment_id, patient_number, doctor_id, scheduled_at
 
 CREATE VIEW vw_AppointmentReport AS
 SELECT a.appointment_id, p.name AS PatientName, d.name AS DoctorName, dep.name AS DeptName, a.scheduled_at, a.status, a.fee, a.payment_status
-FROM APPOINTMENT a JOIN PATIENT p ON a.patient_number = p.patient_number JOIN DOCTOR d ON a.doctor_id = d.doctor_id JOIN DEPARTMENT dep ON d.department_id = dep.department_code;
+FROM APPOINTMENT a 
+JOIN PATIENT p ON a.patient_number = p.patient_number 
+JOIN DOCTOR d ON a.doctor_id = d.doctor_id 
+JOIN DEPARTMENT dep ON d.department_code = dep.department_code;
 
 CREATE VIEW vw_RoomAllocation AS
-SELECT r.room_number, r.room_type, dep.name AS DeptName, r.status, p.name AS CurrentPatient, NOW() as admission_date
-FROM ROOM r JOIN DEPARTMENT dep ON r.department_code = dep.department_code LEFT JOIN PATIENT p ON dep.department_code = p.patient_number;
+SELECT r.room_number, r.room_type, dep.name AS DeptName, r.status, p.name AS CurrentPatient, adm.admission_date
+FROM ROOM r 
+JOIN DEPARTMENT dep ON r.department_code = dep.department_code 
+LEFT JOIN ADMISSION adm ON r.department_code = adm.department_code AND adm.discharge_date IS NULL
+LEFT JOIN PATIENT p ON adm.patient_number = p.patient_number;
 
 CREATE VIEW vw_DoctorPatientHours AS
-SELECT d.name AS DoctorName, p.name AS PatientName, 10.0 as hours_per_week
-FROM DOCTOR d JOIN PATIENT p ON d.doctor_id = p.patient_number;
+SELECT d.name AS DoctorName, p.name AS PatientName, e.hours_per_week
+FROM DOCTOR d 
+JOIN EXAMINES e ON d.doctor_id = e.doctor_id
+JOIN PATIENT p ON e.patient_number = p.patient_number;
