@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hospital IS – ERD</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#eef2f7; font-family:'Segoe UI',sans-serif; }
+header { background:#1e3a8a; color:#fff; text-align:center; padding:18px; }
+header h1 { font-size:22px; }
+header p  { font-size:12px; opacity:.75; margin-top:4px; }
+.legend {
+  display:flex; flex-wrap:wrap; gap:18px; justify-content:center;
+  padding:10px 20px; background:#fff; border-bottom:1px solid #e2e8f0; font-size:13px;
+}
+.li { display:flex; align-items:center; gap:7px; }
+.l-rect  { width:32px; height:18px; background:#dbeafe; border:2px solid #1d4ed8; border-radius:3px; }
+.l-ell   { width:44px; height:18px; background:#dcfce7; border:2px solid #16a34a; border-radius:50%; }
+.l-pk    { width:44px; height:18px; background:#dcfce7; border:2.5px solid #15803d; border-radius:50%;
+           text-align:center; font-size:9px; line-height:18px; text-decoration:underline;
+           color:#15803d; font-weight:700; }
+.l-diam  { width:18px; height:18px; background:#fef3c7; border:2px solid #d97706; transform:rotate(45deg); }
+#wrap { overflow:auto; padding:24px; }
+svg { background:#fff; border-radius:12px; box-shadow:0 4px 24px rgba(0,0,0,0.10); display:block; margin:0 auto; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🏥 Hospital Information System — ERD</h1>
+  <p>Proper ERD Notation · Rectangles · Ellipses · Diamonds · Arrows · Cardinality (1, N, M)</p>
+</header>
+<div class="legend">
+  <div class="li"><div class="l-rect"></div>Entity</div>
+  <div class="li"><div class="l-pk">PK</div>Primary Key (underlined)</div>
+  <div class="li"><div class="l-ell"></div>Attribute</div>
+  <div class="li"><div class="l-diam"></div>Relationship</div>
+  <div class="li"><b style="color:#dc2626">1 · N · M</b>&nbsp; Cardinality</div>
+</div>
+<div id="wrap">
+<svg id="erd" width="2800" height="3000" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+<script>
+const S = document.getElementById('erd');
+const ns = 'http://www.w3.org/2000/svg';
+function mk(tag,a,txt){
+  const e=document.createElementNS(ns,tag);
+  for(const[k,v] of Object.entries(a)) e.setAttribute(k,v);
+  if(txt!=null) e.textContent=txt;
+  S.appendChild(e); return e;
+}
+const LINE=(x1,y1,x2,y2,s='#94a3b8',w=1.5)=>mk('line',{x1,y1,x2,y2,stroke:s,'stroke-width':w});
+const TEXT=(x,y,t,sz=12,c='#1e293b',bold=false,anc='middle')=>{
+  mk('text',{x,y,'text-anchor':anc,'dominant-baseline':'middle',
+    'font-family':'Segoe UI','font-size':sz,'font-weight':bold?'bold':'normal',fill:c},t);
+};
+function ENTITY(cx,cy,name){
+  mk('rect',{x:cx-95,y:cy-24,width:190,height:48,rx:4,
+    fill:'#dbeafe',stroke:'#1d4ed8','stroke-width':2.5});
+  TEXT(cx,cy,name,14,'#1e3a8a',true);
+}
+function ATTR(cx,cy,label,isPK=false,isMulti=false){
+  const rx=Math.max(55,label.length*5), ry=17;
+  mk('ellipse',{cx,cy,rx,ry,
+    fill:isPK?'#dcfce7':'#f0fdf4',
+    stroke:isPK?'#15803d':'#16a34a',
+    'stroke-width':isPK?2.2:1.5,
+    'stroke-dasharray':isMulti?'5,3':''});
+  TEXT(cx,cy,label,10,isPK?'#14532d':'#166534',isPK);
+  if(isPK){
+    const w=label.length*5.5;
+    LINE(cx-w/2,cy+9,cx+w/2,cy+9,'#15803d',1.2);
+  }
+}
+function ALINE(ex,ey,ax,ay){ LINE(ex,ey,ax,ay,'#86efac',1.3); }
+function DIAMOND(cx,cy,label){
+  const pts=`${cx},${cy-28} ${cx+58},${cy} ${cx},${cy+28} ${cx-58},${cy}`;
+  mk('polygon',{points:pts,fill:'#fef3c7',stroke:'#d97706','stroke-width':2});
+  const words=label.split(' ');
+  if(words.length<=2){
+    TEXT(cx,cy,label,9,'#78350f',true);
+  } else {
+    TEXT(cx,cy-8,words.slice(0,Math.ceil(words.length/2)).join(' '),9,'#78350f',true);
+    TEXT(cx,cy+8,words.slice(Math.ceil(words.length/2)).join(' '),9,'#78350f',true);
+  }
+}
+function RLINE(x1,y1,x2,y2,c1,c2){
+  LINE(x1,y1,x2,y2,'#475569',1.6);
+  const ang=Math.atan2(y2-y1,x2-x1);
+  const al=10,aw=5;
+  const p=`${x2},${y2} ${x2-al*Math.cos(ang)+aw*Math.sin(ang)},${y2-al*Math.sin(ang)-aw*Math.cos(ang)} ${x2-al*Math.cos(ang)-aw*Math.sin(ang)},${y2-al*Math.sin(ang)+aw*Math.cos(ang)}`;
+  mk('polygon',{points:p,fill:'#475569'});
+  const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+  const nx=-dy/len*16,ny=dx/len*16;
+  if(c1) mk('text',{x:x1+dx/len*30+nx,y:y1+dy/len*30+ny,'text-anchor':'middle','dominant-baseline':'middle','font-family':'Segoe UI','font-size':13,'font-weight':'bold',fill:'#dc2626'},c1);
+  if(c2) mk('text',{x:x2-dx/len*30+nx,y:y2-dy/len*30+ny,'text-anchor':'middle','dominant-baseline':'middle','font-family':'Segoe UI','font-size':13,'font-weight':'bold',fill:'#dc2626'},c2);
+}
+function BADGE(x,y,txt){
+  mk('rect',{x:x-4,y:y-13,width:txt.length*7+8,height:18,fill:'#1e3a8a',rx:3,opacity:.9});
+  mk('text',{x,y:y+1,'font-family':'Segoe UI','font-size':10,fill:'#fff','font-weight':'bold'},txt);
+}
+
+// ═══════════════════════════════════════════
+// ENTITY POSITIONS (cx, cy)
+// ═══════════════════════════════════════════
+// ROW 1
+const DEPT={x:1400,y:200};
+// ROW 2
+const PAT={x:380,y:550};  const HLOC={x:1400,y:580};  const DOC={x:2400,y:550};
+// ROW 3
+const ROOM={x:1000,y:1000}; const PRESC={x:2400,y:1050};
+// ROW 4
+const APPT={x:380,y:1400};  const ADM={x:1700,y:1400};
+// ROW 5
+const MREC={x:600,y:1900};  const SCAN={x:1700,y:1900};
+// ROW 6
+const CF={x:300,y:2450};
+
+// ═══════════════════════════════════════════
+// DIAMOND POSITIONS
+// ═══════════════════════════════════════════
+const D_ADMITDEPT={x:890,y:370};
+const D_WORKSIN={x:1900,y:370};
+const D_LOCATED={x:1400,y:390};
+const D_EXAMINES={x:1390,y:700};
+const D_CONTAINS={x:1200,y:700};
+const D_WRITES={x:2400,y:800};
+const D_BOOKS={x:380,y:1100};
+const D_CONDUCTS={x:1000,y:1200};
+const D_RESERVES={x:2100,y:1200};
+const D_HOUSES={x:1350,y:1200};
+const D_UNDERGOES={x:1040,y:1400};
+const D_HASREC={x:800,y:1700};
+const D_CREATEREC={x:1650,y:1700};
+const D_HASSCAN={x:2000,y:1700};
+const D_HASPRESC={x:1000,y:1900};
+
+// ═══════════════════════════════════════════
+// DRAW ATTRIBUTE LINES FIRST
+// ═══════════════════════════════════════════
+// PATIENT attrs
+[[PAT.x,PAT.y-130],[PAT.x+130,PAT.y-100],[PAT.x-160,PAT.y-70],[PAT.x+170,PAT.y-30],
+ [PAT.x-175,PAT.y+30],[PAT.x+170,PAT.y+70],[PAT.x-130,PAT.y+110],[PAT.x+80,PAT.y+120],[PAT.x-30,PAT.y+140]
+].forEach(([ax,ay])=>ALINE(PAT.x,PAT.y,ax,ay));
+// DEPT attrs
+[[DEPT.x-120,DEPT.y-110],[DEPT.x+120,DEPT.y-110],[DEPT.x+180,DEPT.y+20],[DEPT.x+160,DEPT.y+90]
+].forEach(([ax,ay])=>ALINE(DEPT.x,DEPT.y,ax,ay));
+// DOCTOR attrs
+[[DOC.x,DOC.y-130],[DOC.x-130,DOC.y-90],[DOC.x+130,DOC.y-90],
+ [DOC.x-180,DOC.y],[DOC.x+185,DOC.y],[DOC.x+170,DOC.y+80],[DOC.x,DOC.y+120],[DOC.x-130,DOC.y+90]
+].forEach(([ax,ay])=>ALINE(DOC.x,DOC.y,ax,ay));
+// ROOM attrs
+[[ROOM.x,ROOM.y-110],[ROOM.x-165,ROOM.y-40],[ROOM.x+155,ROOM.y-40],[ROOM.x,ROOM.y+105]
+].forEach(([ax,ay])=>ALINE(ROOM.x,ROOM.y,ax,ay));
+// PRESC attrs
+[[PRESC.x,PRESC.y-120],[PRESC.x-140,PRESC.y-80],[PRESC.x+150,PRESC.y-80],
+ [PRESC.x-155,PRESC.y],[PRESC.x+160,PRESC.y],[PRESC.x-130,PRESC.y+85],[PRESC.x+120,PRESC.y+80]
+].forEach(([ax,ay])=>ALINE(PRESC.x,PRESC.y,ax,ay));
+// APPT attrs
+[[APPT.x,APPT.y-120],[APPT.x-155,APPT.y-60],[APPT.x+160,APPT.y-60],
+ [APPT.x-150,APPT.y+50],[APPT.x-60,APPT.y+120],[APPT.x+90,APPT.y+115]
+].forEach(([ax,ay])=>ALINE(APPT.x,APPT.y,ax,ay));
+// ADM attrs
+[[ADM.x,ADM.y-120],[ADM.x-155,ADM.y-60],[ADM.x+170,ADM.y-60],[ADM.x,ADM.y+110]
+].forEach(([ax,ay])=>ALINE(ADM.x,ADM.y,ax,ay));
+// MREC attrs
+[[MREC.x,MREC.y-115],[MREC.x-165,MREC.y-50],[MREC.x+155,MREC.y-50],[MREC.x,MREC.y+110]
+].forEach(([ax,ay])=>ALINE(MREC.x,MREC.y,ax,ay));
+// HLOC attrs
+[[HLOC.x,HLOC.y-115],[HLOC.x-150,HLOC.y-50],[HLOC.x+150,HLOC.y-50],[HLOC.x,HLOC.y+110]
+].forEach(([ax,ay])=>ALINE(HLOC.x,HLOC.y,ax,ay));
+// SCAN attrs
+[[SCAN.x,SCAN.y-110],[SCAN.x-155,SCAN.y-50],[SCAN.x+155,SCAN.y],[SCAN.x,SCAN.y+105]
+].forEach(([ax,ay])=>ALINE(SCAN.x,SCAN.y,ax,ay));
+// CF attrs
+[[CF.x,CF.y-120],[CF.x-155,CF.y-60],[CF.x+150,CF.y-60],
+ [CF.x-150,CF.y+40],[CF.x+145,CF.y+40],[CF.x,CF.y+120]
+].forEach(([ax,ay])=>ALINE(CF.x,CF.y,ax,ay));
+
+// ═══════════════════════════════════════════
+// RELATIONSHIP LINES
+// ═══════════════════════════════════════════
+// Admitted To: Pat → D_ADMITDEPT → Dept
+RLINE(PAT.x+95,PAT.y,D_ADMITDEPT.x-58,D_ADMITDEPT.y,'N','');
+RLINE(DEPT.x-95,DEPT.y,D_ADMITDEPT.x+58,D_ADMITDEPT.y,'1','');
+// Works In: Doc → D_WORKSIN → Dept
+RLINE(DOC.x-95,DOC.y,D_WORKSIN.x+58,D_WORKSIN.y,'N','');
+RLINE(DEPT.x+95,DEPT.y,D_WORKSIN.x-58,D_WORKSIN.y,'1','');
+// Located At: Dept → D_LOCATED → HospLoc
+RLINE(DEPT.x,DEPT.y+24,D_LOCATED.x,D_LOCATED.y-28,'1','');
+RLINE(HLOC.x,HLOC.y-24,D_LOCATED.x,D_LOCATED.y+28,'N','');
+// Examines M:N
+RLINE(PAT.x+95,PAT.y+15,D_EXAMINES.x-58,D_EXAMINES.y,'N','');
+RLINE(DOC.x-95,DOC.y+15,D_EXAMINES.x+58,D_EXAMINES.y,'M','');
+// Contains: Dept→Room
+RLINE(DEPT.x-50,DEPT.y+24,D_CONTAINS.x+10,D_CONTAINS.y-28,'1','');
+RLINE(ROOM.x+30,ROOM.y-24,D_CONTAINS.x-10,D_CONTAINS.y+28,'N','');
+// Writes: Doc→Presc
+RLINE(DOC.x,DOC.y+24,D_WRITES.x,D_WRITES.y-28,'1','');
+RLINE(PRESC.x,PRESC.y-24,D_WRITES.x,D_WRITES.y+28,'N','');
+// Books: Pat→Appt
+RLINE(PAT.x,PAT.y+24,D_BOOKS.x,D_BOOKS.y-28,'1','');
+RLINE(APPT.x,APPT.y-24,D_BOOKS.x,D_BOOKS.y+28,'N','');
+// Conducts: Doc→Appt
+RLINE(DOC.x-40,DOC.y+24,D_CONDUCTS.x+30,D_CONDUCTS.y-28,'1','');
+RLINE(APPT.x+95,APPT.y,D_CONDUCTS.x-58,D_CONDUCTS.y,'N','');
+// Reserves: Doc→Adm
+RLINE(DOC.x-20,DOC.y+24,D_RESERVES.x+40,D_RESERVES.y-28,'1','');
+RLINE(ADM.x+95,ADM.y,D_RESERVES.x-58,D_RESERVES.y,'N','');
+// Houses: Room→Adm
+RLINE(ROOM.x+95,ROOM.y+10,D_HOUSES.x-58,D_HOUSES.y,'1','');
+RLINE(ADM.x-40,ADM.y-24,D_HOUSES.x+20,D_HOUSES.y+28,'N','');
+// Undergoes: Pat→Adm
+RLINE(PAT.x+50,PAT.y+24,D_UNDERGOES.x-58,D_UNDERGOES.y,'1','');
+RLINE(ADM.x-95,ADM.y,D_UNDERGOES.x+58,D_UNDERGOES.y,'N','');
+// Has Record: Pat→MRec
+RLINE(PAT.x+20,PAT.y+24,D_HASREC.x-40,D_HASREC.y-28,'1','');
+RLINE(MREC.x+30,MREC.y-24,D_HASREC.x-10,D_HASREC.y+28,'N','');
+// Creates Record: Doc→MRec
+RLINE(DOC.x-60,DOC.y+24,D_CREATEREC.x+40,D_CREATEREC.y-28,'1','');
+RLINE(MREC.x+95,MREC.y,D_CREATEREC.x-58,D_CREATEREC.y,'N','');
+// Has Scan
+RLINE(DOC.x-80,DOC.y+24,D_HASSCAN.x+30,D_HASSCAN.y-28,'1','');
+RLINE(SCAN.x+40,SCAN.y-24,D_HASSCAN.x+10,D_HASSCAN.y+28,'N','');
+// Has Presc: MRec→Presc
+RLINE(MREC.x+95,MREC.y+5,D_HASPRESC.x-58,D_HASPRESC.y,'1','');
+RLINE(PRESC.x-80,PRESC.y+24,D_HASPRESC.x+30,D_HASPRESC.y-28,'N','');
+
+// HrsPerWeek on EXAMINES relationship
+ALINE(D_EXAMINES.x,D_EXAMINES.y,D_EXAMINES.x-120,D_EXAMINES.y+80);
+
+// ═══════════════════════════════════════════
+// DRAW DIAMONDS
+// ═══════════════════════════════════════════
+DIAMOND(D_ADMITDEPT.x,D_ADMITDEPT.y,'Admitted To');
+DIAMOND(D_WORKSIN.x,D_WORKSIN.y,'Works In');
+DIAMOND(D_LOCATED.x,D_LOCATED.y,'Located At');
+DIAMOND(D_EXAMINES.x,D_EXAMINES.y,'Examines');
+DIAMOND(D_CONTAINS.x,D_CONTAINS.y,'Contains');
+DIAMOND(D_WRITES.x,D_WRITES.y,'Writes');
+DIAMOND(D_BOOKS.x,D_BOOKS.y,'Books');
+DIAMOND(D_CONDUCTS.x,D_CONDUCTS.y,'Conducts');
+DIAMOND(D_RESERVES.x,D_RESERVES.y,'Reserves');
+DIAMOND(D_HOUSES.x,D_HOUSES.y,'Houses');
+DIAMOND(D_UNDERGOES.x,D_UNDERGOES.y,'Undergoes');
+DIAMOND(D_HASREC.x,D_HASREC.y,'Has Record');
+DIAMOND(D_CREATEREC.x,D_CREATEREC.y,'Creates');
+DIAMOND(D_HASSCAN.x,D_HASSCAN.y,'Has Scan');
+DIAMOND(D_HASPRESC.x,D_HASPRESC.y,'Has Presc');
+
+// ═══════════════════════════════════════════
+// DRAW ENTITIES
+// ═══════════════════════════════════════════
+ENTITY(DEPT.x,DEPT.y,'DEPARTMENT');
+ENTITY(PAT.x,PAT.y,'PATIENT');
+ENTITY(DOC.x,DOC.y,'DOCTOR');
+ENTITY(ROOM.x,ROOM.y,'ROOM');
+ENTITY(PRESC.x,PRESC.y,'PRESCRIPTION');
+ENTITY(APPT.x,APPT.y,'APPOINTMENT');
+ENTITY(ADM.x,ADM.y,'ADMISSION');
+ENTITY(MREC.x,MREC.y,'MEDICAL RECORD');
+ENTITY(HLOC.x,HLOC.y,'HOSP. LOCATION');
+ENTITY(SCAN.x,SCAN.y,'SCAN');
+ENTITY(CF.x,CF.y,'CONTACT FORM');
+
+// ═══════════════════════════════════════════
+// DRAW ATTRIBUTES
+// ═══════════════════════════════════════════
+// PATIENT
+ATTR(PAT.x,PAT.y-130,'PatientNo',true);
+ATTR(PAT.x+130,PAT.y-100,'SSN',true);
+ATTR(PAT.x-160,PAT.y-70,'Name');
+ATTR(PAT.x+170,PAT.y-30,'BirthDate');
+ATTR(PAT.x-175,PAT.y+30,'Address',false,true);
+ATTR(PAT.x+170,PAT.y+70,'BloodType');
+ATTR(PAT.x-130,PAT.y+110,'Phone');
+ATTR(PAT.x+80,PAT.y+120,'MedHistory');
+ATTR(PAT.x-30,PAT.y+140,'DeptAdmDate');
+// DEPARTMENT
+ATTR(DEPT.x-120,DEPT.y-110,'DeptCode',true);
+ATTR(DEPT.x+120,DEPT.y-110,'DeptName',true);
+ATTR(DEPT.x+180,DEPT.y+20,'ChairmanID');
+ATTR(DEPT.x+160,DEPT.y+90,'SupervDate');
+// DOCTOR
+ATTR(DOC.x,DOC.y-130,'SSN',true);
+ATTR(DOC.x-130,DOC.y-90,'Name');
+ATTR(DOC.x+130,DOC.y-90,'Sex');
+ATTR(DOC.x-180,DOC.y,'BirthDate');
+ATTR(DOC.x+185,DOC.y,'MajorArea');
+ATTR(DOC.x+170,DOC.y+80,'Degree');
+ATTR(DOC.x,DOC.y+120,'JoinDate');
+ATTR(DOC.x-130,DOC.y+90,'LicenseNum');
+// ROOM
+ATTR(ROOM.x,ROOM.y-110,'RoomNo',true);
+ATTR(ROOM.x-165,ROOM.y-40,'RoomType');
+ATTR(ROOM.x+155,ROOM.y-40,'Capacity');
+ATTR(ROOM.x,ROOM.y+105,'Status');
+// PRESC
+ATTR(PRESC.x,PRESC.y-120,'PrescNo',true);
+ATTR(PRESC.x-140,PRESC.y-80,'PrescDate');
+ATTR(PRESC.x+150,PRESC.y-80,'Medicine');
+ATTR(PRESC.x-155,PRESC.y,'Dosage');
+ATTR(PRESC.x+160,PRESC.y,'FreqPerDay');
+ATTR(PRESC.x-130,PRESC.y+85,'StartDate');
+ATTR(PRESC.x+120,PRESC.y+80,'EndDate');
+// APPT
+ATTR(APPT.x,APPT.y-120,'ApptID',true);
+ATTR(APPT.x-155,APPT.y-60,'ApptDate');
+ATTR(APPT.x+160,APPT.y-60,'ApptTime');
+ATTR(APPT.x-150,APPT.y+50,'Status');
+ATTR(APPT.x-60,APPT.y+120,'PayAmount');
+ATTR(APPT.x+90,APPT.y+115,'PayStatus');
+// ADM
+ATTR(ADM.x,ADM.y-120,'AdmissionID',true);
+ATTR(ADM.x-155,ADM.y-60,'AdmDate');
+ATTR(ADM.x+170,ADM.y-60,'DischargeDate');
+ATTR(ADM.x,ADM.y+110,'Status');
+// MREC
+ATTR(MREC.x,MREC.y-115,'RecordID',true);
+ATTR(MREC.x-165,MREC.y-50,'Diagnosis');
+ATTR(MREC.x+155,MREC.y-50,'Treatment');
+ATTR(MREC.x,MREC.y+110,'RecordDate');
+// HLOC
+ATTR(HLOC.x,HLOC.y-115,'LocationID',true);
+ATTR(HLOC.x-150,HLOC.y-50,'Latitude');
+ATTR(HLOC.x+150,HLOC.y-50,'Longitude');
+ATTR(HLOC.x,HLOC.y+110,'Description');
+// SCAN
+ATTR(SCAN.x,SCAN.y-110,'ScanID',true);
+ATTR(SCAN.x-155,SCAN.y-50,'ScanType');
+ATTR(SCAN.x+155,SCAN.y,'FilePath');
+ATTR(SCAN.x,SCAN.y+105,'UploadDate');
+// CF
+ATTR(CF.x,CF.y-120,'ContactID',true);
+ATTR(CF.x-155,CF.y-60,'FullName');
+ATTR(CF.x+150,CF.y-60,'Email');
+ATTR(CF.x-150,CF.y+40,'Subject');
+ATTR(CF.x+145,CF.y+40,'Message');
+ATTR(CF.x,CF.y+120,'Status');
+// HrsPerWeek on EXAMINES
+ATTR(D_EXAMINES.x-120,D_EXAMINES.y+80,'HrsPerWeek');
+
+// ═══════════════════════════════════════════
+// SECTION BADGES
+// ═══════════════════════════════════════════
+BADGE(285,430,'① PATIENT — Req 1');
+BADGE(1300,100,'② DEPARTMENT — Req 2,4');
+BADGE(2300,430,'③ DOCTOR — Req 3,4,5');
+BADGE(860,875,'④ ROOM — Req 2,9');
+BADGE(2245,920,'⑤ PRESCRIPTION — Req 5');
+BADGE(225,1275,'⑥ APPOINTMENT — Req 7,8');
+BADGE(1560,1275,'⑦ ADMISSION — Req 9');
+BADGE(435,1780,'⑧ MEDICAL RECORD — Req 5');
+BADGE(1200,1460,'⑨ HOSP. LOCATION — Req 6');
+BADGE(1555,1780,'⑩ SCAN');
+BADGE(170,2330,'⑪ CONTACT FORM');
+</script>
+</body>
+</html>

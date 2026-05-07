@@ -1,0 +1,220 @@
+
+<style>
+#erd-wrap { padding: 1rem 0; }
+#erd-wrap svg { width: 100%; }
+.mermaid-fallback { color: var(--color-text-secondary); font-size: 13px; }
+</style>
+<div id="erd-wrap"><div id="erd"></div></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '12px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#2a2a28' : '#f1efef',
+    primaryBorderColor: dark ? '#555550' : '#b0aeaa',
+    attributeBackgroundColorEven: dark ? '#1e1e1c' : '#f8f7f4',
+    attributeBackgroundColorOdd: dark ? '#252522' : '#ffffff',
+  },
+});
+const diagram = `erDiagram
+  PATIENT {
+    int patient_number PK
+    string ssn UK
+    string name
+    string address
+    string phone
+    date birthdate
+    string sex
+    text medical_history
+    float blood_pressure
+    float heart_rate
+    float temperature
+  }
+  DEPARTMENT {
+    int department_code PK
+    string name UK
+    int chairman_id FK
+    date chairman_start_date
+  }
+  DEPARTMENT_LOCATION {
+    int dept_location_id PK
+    int department_code FK
+    string location
+  }
+  DOCTOR {
+    int doctor_id PK
+    string ssn UK
+    string name
+    string sex
+    date birth_date
+    string major_area
+    string degree
+    int department_id FK
+    date join_date
+  }
+  ADMISSION {
+    int admission_id PK
+    int patient_number FK
+    int department_code FK
+    date admission_date
+    date discharge_date
+  }
+  ROOM {
+    int room_id PK
+    int department_code FK
+    string room_number UK
+    string room_type
+    string status
+  }
+  ROOM_RESERVATION {
+    int reservation_id PK
+    int room_id FK
+    int doctor_id FK
+    int patient_number FK
+    date start_date
+    date end_date
+  }
+  EXAMINES {
+    int doctor_id FK
+    int patient_number FK
+    float hours_per_week
+  }
+  PRESCRIPTION {
+    int prescription_id PK
+    int doctor_id FK
+    int patient_number FK
+    date prescription_date
+  }
+  MEDICATION {
+    int medication_id PK
+    string name
+    string description
+  }
+  PRESCRIPTION_MEDICATION {
+    int prescription_id FK
+    int medication_id FK
+    int times_per_day
+    float dose
+    date start_date
+    date end_date
+  }
+  APPOINTMENT {
+    int appointment_id PK
+    int patient_number FK
+    int doctor_id FK
+    datetime scheduled_at
+    string status
+    float fee
+    string payment_status
+    date refund_date
+  }
+  NURSE {
+    int nurse_id PK
+    string name
+    string ssn UK
+    string sex
+    int department_code FK
+  }
+  EMPLOYEE {
+    int employee_id PK
+    string name
+    string ssn UK
+    string role
+    int department_code FK
+  }
+  USER_ACCOUNT {
+    int user_id PK
+    string username UK
+    string email UK
+    string password_hash
+    string role
+    int profile_id
+    string profile_type
+  }
+  GEO_LOCATION {
+    int location_id PK
+    int department_code FK
+    float latitude
+    float longitude
+    string address
+  }
+  CONTACT_FORM {
+    int form_id PK
+    int user_id FK
+    string subject
+    text message
+    datetime submitted_at
+    string status
+  }
+  SCAN_FILE {
+    int scan_id PK
+    int patient_number FK
+    int doctor_id FK
+    string file_path
+    string file_type
+    datetime uploaded_at
+    string description
+  }
+
+  PATIENT ||--o{ ADMISSION : "admitted to"
+  DEPARTMENT ||--o{ ADMISSION : "receives"
+  DEPARTMENT ||--o{ DEPARTMENT_LOCATION : "has"
+  DEPARTMENT ||--o{ ROOM : "contains"
+  DEPARTMENT ||--o{ NURSE : "employs"
+  DEPARTMENT ||--o{ EMPLOYEE : "has"
+  DEPARTMENT ||--o{ GEO_LOCATION : "located at"
+  DOCTOR }o--|| DEPARTMENT : "joins"
+  DOCTOR ||--o{ EXAMINES : "examines"
+  PATIENT ||--o{ EXAMINES : "examined by"
+  DOCTOR ||--o{ PRESCRIPTION : "writes"
+  PATIENT ||--o{ PRESCRIPTION : "receives"
+  PRESCRIPTION ||--o{ PRESCRIPTION_MEDICATION : "includes"
+  MEDICATION ||--o{ PRESCRIPTION_MEDICATION : "prescribed in"
+  DOCTOR ||--o{ APPOINTMENT : "has"
+  PATIENT ||--o{ APPOINTMENT : "books"
+  ROOM ||--o{ ROOM_RESERVATION : "reserved in"
+  DOCTOR ||--o{ ROOM_RESERVATION : "reserves"
+  PATIENT ||--o{ ROOM_RESERVATION : "assigned"
+  PATIENT ||--o{ SCAN_FILE : "has"
+  DOCTOR ||--o{ SCAN_FILE : "uploads"
+  USER_ACCOUNT ||--o{ CONTACT_FORM : "submits"
+  DEPARTMENT ||--|| DOCTOR : "chaired by"
+`;
+try {
+  const { svg } = await mermaid.render('erd-svg', diagram);
+  document.getElementById('erd').innerHTML = svg;
+  document.querySelectorAll('#erd svg .node').forEach(node => {
+    const firstPath = node.querySelector('path[d]');
+    if (!firstPath) return;
+    const d = firstPath.getAttribute('d');
+    const nums = d.match(/-?[\d.]+/g)?.map(Number);
+    if (!nums || nums.length < 8) return;
+    const xs = [nums[0], nums[2], nums[4], nums[6]];
+    const ys = [nums[1], nums[3], nums[5], nums[7]];
+    const x = Math.min(...xs), y = Math.min(...ys);
+    const w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', w); rect.setAttribute('height', h);
+    rect.setAttribute('rx', '8');
+    for (const a of ['fill', 'stroke', 'stroke-width', 'class', 'style']) {
+      if (firstPath.hasAttribute(a)) rect.setAttribute(a, firstPath.getAttribute(a));
+    }
+    firstPath.replaceWith(rect);
+  });
+  document.querySelectorAll('#erd svg .row-rect-odd path, #erd svg .row-rect-even path').forEach(p => {
+    p.setAttribute('stroke', 'none');
+  });
+} catch(e) {
+  document.getElementById('erd').innerHTML = '<p class="mermaid-fallback">ERD failed to render: ' + e.message + '</p>';
+}
+</script>
