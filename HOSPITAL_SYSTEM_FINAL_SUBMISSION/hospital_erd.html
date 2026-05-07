@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hospital ERD Suite — Modular Edition</title>
+    <style>
+        :root { --bg: #f8fafc; --primary: #0f172a; --accent: #0284c7; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); margin: 0; padding: 0; }
+        .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 280px; background: var(--primary); color: white; padding: 40px 20px; z-index: 100; }
+        .main { margin-left: 280px; padding: 40px; }
+        h1 { font-size: 1.5rem; margin-bottom: 30px; color: #cbd5e1; border-bottom: 1px solid #334155; padding-bottom: 20px; }
+        .nav-item { padding: 12px 16px; border-radius: 8px; cursor: pointer; margin-bottom: 8px; transition: 0.2s; color: #94a3b8; font-weight: 500; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: var(--accent); color: white; }
+        .content-card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; min-height: 600px; }
+        .header-meta { margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .badge { background: #e0f2fe; color: #0369a1; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; }
+        iframe { width: 100%; border: none; min-height: 800px; }
+        .footer-note { margin-top: 40px; font-size: 0.8rem; color: #94a3b8; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h1>🏥 HIS Architect</h1>
+    <div class="nav-item active" onclick="loadERD('erd_people_core.html', this)">👥 People & Users</div>
+    <div class="nav-item" onclick="loadERD('erd_clinical_core.html', this)">🩺 Clinical & Medical</div>
+    <div class="nav-item" onclick="loadERD('erd_department_facility.html', this)">🏢 Facility & Rooms</div>
+    <div class="nav-item" onclick="loadERD('erd_prescription_feedback.html', this)">💊 Prescription & Feedback</div>
+</div>
+
+<div class="main">
+    <div class="header-meta">
+        <h2 id="view-title" style="margin: 0; color: #1e293b;">People & Users Core</h2>
+        <span class="badge">Professional Modular Edition</span>
+    </div>
+
+    <div class="content-card">
+        <iframe id="erd-frame" src="erd_people_core.html"></iframe>
+    </div>
+
+    <div class="footer-note">
+        Hospital Information System · Interactive Modular ERD Suite · Phase 1 Certified
+    </div>
+</div>
+
+<script>
+    function loadERD(file, el) {
+        document.getElementById('erd-frame').src = file;
+        document.getElementById('view-title').innerText = el.innerText;
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        el.classList.add('active');
+    }
+</script>
+
+</body>
+</html>

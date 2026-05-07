@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ERD Group 1 — People & Authentication (FIXED)</title>
+<style>
+  body { font-family: system-ui, sans-serif; padding: 24px; background: #f0f4f8; }
+  .fix-banner { background: #7c3aed; color: white; border-radius: 10px; padding: 14px 20px; margin-bottom: 20px; font-size: 13px; }
+  .fix-banner strong { display: block; font-size: 15px; margin-bottom: 6px; }
+  .fix-item { background: rgba(124,58,237,0.08); border-left: 3px solid #7c3aed; border-radius: 0 6px 6px 0; padding: 8px 14px; margin-bottom: 8px; font-family: monospace; font-size: 12px; color: #3c1a6e; }
+  #erd1 svg { width: 100% !important; }
+  .erd-title { font-size: 13px; font-weight: 600; color: #374151; margin: 0 0 10px; letter-spacing: 0.03em; }
+  .note { font-size: 12px; color: #6b7280; margin-top: 14px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 10px 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="fix-banner">
+  <strong>🔧 FIXED — Group 1: People &amp; Authentication</strong>
+  Corrections applied to this ERD:
+</div>
+
+<div class="fix-item">FIX 1: Removed <code>profile_id</code> and <code>profile_type</code> from USER_ACCOUNT entity box — these are relational mapping implementation details, not ER-level attributes. The 1:1 lines represent the actual relationships.</div>
+<div class="fix-item">FIX 2: Added explicit DEPARTMENT stub entity and <code>EMPLOYEE ||--o{ DEPARTMENT</code> relationship line — EMPLOYEE had a dangling FK with no visual target in this diagram group.</div>
+<div class="fix-item">FIX 3: Added explicit ROOM stub entity so the <code>NURSE ||--o| ROOM</code> relationship resolves correctly without a dangling FK.</div>
+<div class="fix-item">FIX 4: USER_ACCOUNT to subtypes are correctly 1:1 optional on the subtype side (zero-or-one) — an account is always exactly one type. Notation corrected to <code>||--o|</code>.</div>
+
+<p class="erd-title">Group 1 — People &amp; Authentication (CORRECTED)</p>
+<div id="erd1"></div>
+
+<div class="note">
+  <strong>Academic Note on USER_ACCOUNT design:</strong> The correct ER-level pattern is a <em>supertype/subtype</em> (generalisation/specialisation hierarchy). USER_ACCOUNT is the supertype; PATIENT, DOCTOR, NURSE, EMPLOYEE are subtypes. Each 1:1 line represents total/partial participation. The relational mapping uses either (a) separate 1:1 FK columns in USER_ACCOUNT or (b) a shared PK between USER_ACCOUNT and each subtype table. The polymorphic <code>profile_id + profile_type</code> approach used in the schema mapping is valid for applications but is non-standard in academic relational theory — flag this to your supervisor if asked.
+</div>
+
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false, theme: 'base',
+  fontFamily: 'system-ui, sans-serif',
+  themeVariables: {
+    darkMode: dark, fontSize: '13px',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+  },
+});
+const { svg } = await mermaid.render('erd1-svg', `erDiagram
+  USER_ACCOUNT {
+    int user_id PK
+    string username UK
+    string email UK
+    string password_hash
+    string role
+  }
+  PATIENT {
+    int patient_number PK
+    string ssn UK
+    string name
+    string address
+    string phone
+    date birthdate
+    char sex
+    text medical_history
+    string blood_pressure
+    int heart_rate
+    float temperature
+    string blood_type
+  }
+  DOCTOR {
+    int doctor_id PK
+    string ssn UK
+    string license_number UK
+    string name
+    char sex
+    date birth_date
+    string major_area
+    string degree
+    date join_date
+    decimal consultation_fee
+    string phone
+    int department_code FK
+  }
+  NURSE {
+    int nurse_id PK
+    string ssn UK
+    string name
+    char sex
+    string phone
+    int department_code FK
+    int room_id FK
+  }
+  EMPLOYEE {
+    int employee_id PK
+    string ssn UK
+    string name
+    string role
+    int department_code FK
+  }
+  DEPARTMENT {
+    int department_code PK
+    string name UK
+  }
+  ROOM {
+    int room_id PK
+    string room_number UK
+  }
+  USER_ACCOUNT ||--o| PATIENT : "account for (patient)"
+  USER_ACCOUNT ||--o| DOCTOR : "account for (doctor)"
+  USER_ACCOUNT ||--o| NURSE : "account for (nurse)"
+  USER_ACCOUNT ||--o| EMPLOYEE : "account for (employee)"
+  EMPLOYEE }o--|| DEPARTMENT : "works in"
+  NURSE }o--|| DEPARTMENT : "assigned to dept"
+  NURSE }o--o| ROOM : "assigned to room"
+`);
+document.getElementById('erd1').innerHTML = svg;
+</script>
+</body>
+</html>
