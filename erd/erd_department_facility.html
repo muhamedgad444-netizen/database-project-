@@ -1,0 +1,80 @@
+
+<style>
+#erd2 svg { width: 100% !important; }
+.erd-title2 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin: 0 0 8px; letter-spacing: 0.03em; }
+</style>
+<p class="erd-title2">Group 2 — Department & Facility</p>
+<div id="erd2"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
+mermaid.initialize({
+  startOnLoad: false, theme: 'base',
+  fontFamily: '"Anthropic Sans", sans-serif',
+  themeVariables: {
+    darkMode: dark, fontSize: '13px',
+    fontFamily: '"Anthropic Sans", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+  },
+});
+const { svg } = await mermaid.render('erd2-svg', `erDiagram
+  DEPARTMENT {
+    int department_code PK
+    string name UK
+    int chairman_id FK
+    date chairman_start_date
+  }
+  DOCTOR {
+    int doctor_id PK
+    string name
+    int department_code FK
+  }
+  ROOM {
+    int room_id PK
+    int department_code FK
+    string room_number UK
+    string room_type
+    string status
+    int capacity
+  }
+  NURSE {
+    int nurse_id PK
+    int department_code FK
+    int room_id FK
+  }
+  DEPARTMENT_LOCATION {
+    int dept_location_id PK
+    int department_code FK
+    string location
+  }
+  GEO_LOCATION {
+    int location_id PK
+    int department_code FK
+    decimal latitude
+    decimal longitude
+    string address
+  }
+  DEPARTMENT ||--|{ DOCTOR : "employs"
+  DEPARTMENT ||--o{ ROOM : "has"
+  DEPARTMENT ||--o{ DEPARTMENT_LOCATION : "has location"
+  DEPARTMENT ||--o{ GEO_LOCATION : "geo at"
+  DEPARTMENT ||--|| DOCTOR : "chaired by"
+  ROOM ||--o{ NURSE : "assigned to"
+`);
+document.getElementById('erd2').innerHTML = svg;
+document.querySelectorAll('#erd2 .node').forEach(node => {
+  const fp = node.querySelector('path[d]');
+  if (!fp) return;
+  const nums = fp.getAttribute('d').match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs=[nums[0],nums[2],nums[4],nums[6]],ys=[nums[1],nums[3],nums[5],nums[7]];
+  const x=Math.min(...xs),y=Math.min(...ys),w=Math.max(...xs)-x,h=Math.max(...ys)-y;
+  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  r.setAttribute('x',x);r.setAttribute('y',y);r.setAttribute('width',w);r.setAttribute('height',h);r.setAttribute('rx','8');
+  for(const a of['fill','stroke','stroke-width','class','style']) if(fp.hasAttribute(a)) r.setAttribute(a,fp.getAttribute(a));
+  fp.replaceWith(r);
+});
+document.querySelectorAll('#erd2 .row-rect-odd path, #erd2 .row-rect-even path').forEach(p=>p.setAttribute('stroke','none'));
+</script>
