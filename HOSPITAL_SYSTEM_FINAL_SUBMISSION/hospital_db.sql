@@ -250,7 +250,7 @@ CREATE TABLE MEDICAL_RECORD (
 );
 
 -- ============================================================
--- SAMPLE DATA (THE CONNECTED UNIVERSE)
+-- SAMPLE DATA (ALL USERS CONNECTED)
 -- ============================================================
 
 -- 1. DEPARTMENTS
@@ -258,31 +258,97 @@ INSERT INTO DEPARTMENT (department_code, name) VALUES
 (1, 'Radiology'), (2, 'Cardiology'), (3, 'Dentistry'), (4, 'Veterinary'), (5, 'Orthopedics');
 
 -- 2. DOCTORS (All 5 Specialists)
-INSERT INTO DOCTOR (doctor_id, ssn, name, department_code, consultation_fee, major_area) VALUES 
-(1, 'D101', 'Dr. Ahmed', 1, 300.0, 'Radiologist'),
-(2, 'D102', 'Dr. Sara', 2, 350.0, 'Cardiologist'),
-(3, 'D103', 'Dr. Khaled', 3, 150.0, 'Dentist'),
-(4, 'D104', 'Dr. Layla', 4, 100.0, 'Veterinarian'),
-(5, 'D105', 'Dr. Samir', 5, 250.0, 'Orthopedic Surgeon');
+INSERT INTO DOCTOR (doctor_id, ssn, name, department_code, consultation_fee, major_area, license_number, sex) VALUES 
+(1, 'D101', 'Dr. Ahmed',  1, 300.0, 'Radiologist',        'LIC-001', 'Male'),
+(2, 'D102', 'Dr. Sara',   2, 350.0, 'Cardiologist',       'LIC-002', 'Female'),
+(3, 'D103', 'Dr. Khaled', 3, 150.0, 'Dentist',            'LIC-003', 'Male'),
+(4, 'D104', 'Dr. Layla',  4, 100.0, 'Veterinarian',       'LIC-004', 'Female'),
+(5, 'D105', 'Dr. Samir',  5, 250.0, 'Orthopedic Surgeon', 'LIC-005', 'Male');
 
--- 3. PATIENTS
-INSERT INTO PATIENT (patient_number, ssn, name, medical_history, blood_pressure, heart_rate, temperature) VALUES 
-(1001, 'P1001', 'Ali Mohamed', 'Hypertension, Seasonal Allergies', 120.8, 72.0, 37.0);
+-- Set Department Chairmen
+UPDATE DEPARTMENT SET chairman_id = 1 WHERE department_code = 1;
+UPDATE DEPARTMENT SET chairman_id = 2 WHERE department_code = 2;
 
--- 4. USER ACCOUNTS (FIX: Using Option B Typed Subtype Columns)
+-- 3. ROOMS
+INSERT INTO ROOM (room_id, department_code, room_number, room_type, status, capacity) VALUES 
+(1, 1, 'R101', 'Diagnostic',  'Available', 2),
+(2, 2, 'R201', 'ICU',         'Occupied',  1),
+(3, 3, 'R301', 'General',     'Available', 4),
+(4, 5, 'R501', 'Surgery',     'Available', 1);
+
+-- 4. NURSES
+INSERT INTO NURSE (nurse_id, ssn, name, sex, department_code, room_id, phone) VALUES
+(1, 'N201', 'Nurse Fatma',  'Female', 1, 1, '01011111111'),
+(2, 'N202', 'Nurse Hassan', 'Male',   2, 2, '01022222222');
+
+-- 5. EMPLOYEES
+INSERT INTO EMPLOYEE (employee_id, ssn, name, role, department_code) VALUES
+(1, 'E301', 'Omar Receptionist', 'Receptionist', 1),
+(2, 'E302', 'Mona Admin',        'Admin Staff',  2);
+
+-- 6. PATIENTS
+INSERT INTO PATIENT (patient_number, ssn, name, medical_history, blood_pressure, heart_rate, temperature, blood_type, sex) VALUES 
+(1001, 'P1001', 'Ali Mohamed',   'Hypertension, Seasonal Allergies', 120.8, 72.0, 37.0, 'A+',  'Male'),
+(1002, 'P1002', 'Nour Ibrahim',  'Diabetes Type 2',                  130.0, 80.0, 36.8, 'O+',  'Female'),
+(1003, 'P1003', 'Youssef Karim', 'No known conditions',              118.5, 68.0, 37.1, 'B-',  'Male');
+
+-- 7. USER ACCOUNTS (ALL ROLES CONNECTED via Option B Typed FKs)
 INSERT INTO USER_ACCOUNT (user_id, username, email, password_hash, role, patient_id, doctor_id, nurse_id, employee_id) VALUES
-(1, 'admin', 'admin@hospital.com', 'admin123', 'Admin', NULL, NULL, NULL, NULL),
-(2, 'patient_ali', 'ali@email.com', 'pass123', 'Patient', 1001, NULL, NULL, NULL),
-(3, 'dr_ahmed', 'ahmed@hospital.com', 'pass123', 'Doctor', NULL, 1, NULL, NULL),
-(4, 'dr_sara', 'sara@hospital.com', 'pass123', 'Doctor', NULL, 2, NULL, NULL),
-(5, 'dr_khaled', 'khaled@hospital.com', 'pass123', 'Doctor', NULL, 3, NULL, NULL),
-(6, 'dr_layla', 'layla@hospital.com', 'pass123', 'Doctor', NULL, 4, NULL, NULL),
-(7, 'dr_samir', 'samir@hospital.com', 'pass123', 'Doctor', NULL, 5, NULL, NULL);
+(1,  'admin',       'admin@hospital.com',   'admin123', 'Admin',    NULL, NULL, NULL, NULL),
+(2,  'patient_ali', 'ali@email.com',        'pass123',  'Patient',  1001, NULL, NULL, NULL),
+(3,  'patient_nour','nour@email.com',       'pass123',  'Patient',  1002, NULL, NULL, NULL),
+(4,  'patient_youssef','youssef@email.com', 'pass123',  'Patient',  1003, NULL, NULL, NULL),
+(5,  'dr_ahmed',    'ahmed@hospital.com',   'pass123',  'Doctor',   NULL, 1,    NULL, NULL),
+(6,  'dr_sara',     'sara@hospital.com',    'pass123',  'Doctor',   NULL, 2,    NULL, NULL),
+(7,  'dr_khaled',   'khaled@hospital.com',  'pass123',  'Doctor',   NULL, 3,    NULL, NULL),
+(8,  'dr_layla',    'layla@hospital.com',   'pass123',  'Doctor',   NULL, 4,    NULL, NULL),
+(9,  'dr_samir',    'samir@hospital.com',   'pass123',  'Doctor',   NULL, 5,    NULL, NULL),
+(10, 'nurse_fatma', 'fatma@hospital.com',   'pass123',  'Nurse',    NULL, NULL, 1,    NULL),
+(11, 'nurse_hassan','hassan@hospital.com',  'pass123',  'Nurse',    NULL, NULL, 2,    NULL),
+(12, 'emp_omar',    'omar@hospital.com',    'pass123',  'Employee', NULL, NULL, NULL, 1),
+(13, 'emp_mona',    'mona@hospital.com',    'pass123',  'Employee', NULL, NULL, NULL, 2);
 
--- 5. ROOMS & APPOINTMENTS
-INSERT INTO ROOM (room_id, department_code, room_number, room_type, status) VALUES (1, 1, 'R101', 'Diagnostic', 'Available');
+-- 8. APPOINTMENTS
 INSERT INTO APPOINTMENT (appointment_id, patient_number, doctor_id, scheduled_at, status, fee, payment_status) VALUES
-(1, 1001, 1, '2026-05-10 10:00:00', 'Scheduled', 300.0, 'Paid');
+(1, 1001, 1, '2026-05-10 10:00:00', 'Scheduled',  300.0, 'Paid'),
+(2, 1002, 2, '2026-05-11 14:00:00', 'Scheduled',  350.0, 'Paid'),
+(3, 1003, 5, '2026-05-12 09:00:00', 'Completed',  250.0, 'Paid'),
+(4, 1001, 3, '2026-04-20 11:00:00', 'Completed',  150.0, 'Paid');
+
+-- 9. ADMISSIONS
+INSERT INTO ADMISSION (admission_id, patient_number, department_code, admission_date, discharge_date, status) VALUES
+(1, 1002, 2, '2026-05-05', NULL, 'Active');
+
+-- 10. EXAMINES (Doctor-Patient M:N)
+INSERT INTO EXAMINES (doctor_id, patient_number, hours_per_week) VALUES
+(1, 1001, 3), (2, 1002, 5), (5, 1003, 2), (3, 1001, 1);
+
+-- 11. MEDICATIONS
+INSERT INTO MEDICATION (medication_id, name, description) VALUES
+(1, 'Amoxicillin',  'Antibiotic for bacterial infections'),
+(2, 'Metformin',    'Blood sugar control for Type 2 Diabetes'),
+(3, 'Ibuprofen',    'Anti-inflammatory and pain relief');
+
+-- 12. PRESCRIPTIONS
+INSERT INTO PRESCRIPTION (prescription_id, doctor_id, patient_number, prescription_date) VALUES
+(1, 1, 1001, '2026-04-20'),
+(2, 2, 1002, '2026-05-05');
+
+-- 13. PRESCRIPTION_MEDICATION
+INSERT INTO PRESCRIPTION_MEDICATION (prescription_id, medication_id, times_per_day, dose, directions, start_date, end_date) VALUES
+(1, 1, 3, '500mg', 'Take after meals with water', '2026-04-20', '2026-04-30'),
+(2, 2, 2, '850mg', 'Take before breakfast and dinner', '2026-05-05', '2026-06-05');
+
+-- 14. DEPARTMENT LOCATIONS
+INSERT INTO DEPARTMENT_LOCATION (department_code, location) VALUES
+(1, 'Building A - Floor 2'), (1, 'Building A - Floor 3'),
+(2, 'Building B - Floor 1'), (3, 'Building C - Floor 1');
+
+-- 15. CONTACT FORM / FEEDBACK
+INSERT INTO CONTACT_FORM (form_id, user_id, subject, message, rating, submitted_at, status) VALUES
+(1, 2, 'Great Service',      'Dr. Ahmed was very professional.',     5, '2026-05-01 10:00:00', 'Resolved'),
+(2, 3, 'Long Wait Time',     'Had to wait 2 hours for my checkup.',  2, '2026-05-03 15:00:00', 'Pending'),
+(3, 4, 'Clean Facilities',   'Hospital was very clean and modern.',  4, '2026-05-06 09:00:00', 'Pending');
 
 -- ============================================================
 -- REPORT VIEWS

@@ -88,7 +88,8 @@ class HospitalApp(tk.Tk):
         entries = {k: ttk.Entry(grid, font=("Segoe UI", 12), width=30) for _, k in fields}
         for i, (lbl, key) in enumerate(fields):
             tk.Label(grid, text=lbl+":", font=("Segoe UI", 12), bg="#f8fafc").grid(row=i, column=0, sticky="e", pady=8, padx=10)
-            if key == "pass": entries[key].config(show="*"); entries[key].grid(row=i, column=1, pady=8)
+            if key == "pass": entries[key].config(show="*")
+            entries[key].grid(row=i, column=1, pady=8)
         def do_reg():
             v = {k: e.get().strip() for k, e in entries.items()}
             # First create the patient record
