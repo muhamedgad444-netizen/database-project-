@@ -117,7 +117,10 @@ class HospitalApp(tk.Tk):
         tk.Label(t_prof, text="My Medical History", font=("Segoe UI", 16, "bold"), bg="white").pack(anchor="w")
         tk.Label(t_prof, text=pat['medical_history'] or "No history recorded.", font=("Segoe UI", 12), bg="white", wraplength=800, justify="left").pack(anchor="w", pady=10)
         v_fr = tk.Frame(t_prof, bg="white"); v_fr.pack(anchor="w", pady=20)
-        tk.Label(v_fr, text=f"🩸 BP: {pat['blood_pressure'] or '--'}", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20); tk.Label(v_fr, text=f"💓 HR: {pat['heart_rate'] or '--'} bpm", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20); tk.Label(v_fr, text=f"🌡️ Temp: {pat['temperature'] or '--'}°C", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20)
+        tk.Label(v_fr, text=f"🩸 BP: {pat['blood_pressure'] or '--'}", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20); 
+        tk.Label(v_fr, text=f"💓 HR: {pat['heart_rate'] or '--'} bpm", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20); 
+        tk.Label(v_fr, text=f"🌡️ Temp: {pat['temperature'] or '--'}°C", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20);
+        tk.Label(v_fr, text=f"🧪 Type: {pat['blood_type'] or '--'}", font=("Segoe UI", 14), bg="white").pack(side="left", padx=20)
         t1 = tk.Frame(nb); nb.add(t1, text=" 📅 My Visits "); tree = make_tree(t1, ("ID", "Doctor", "Scheduled At", "Status", "Payment"))
         def load():
             for i in tree.get_children(): tree.delete(i)
@@ -149,7 +152,7 @@ class HospitalApp(tk.Tk):
 
     def show_doctor(self):
         self.clear(); did = self.current_user['profile_id']; doc = safe_query("SELECT * FROM DOCTOR WHERE doctor_id=%s", (did,))[0]
-        f = tk.Frame(self.container); f.pack(fill="both", expand=True); self.top_bar(f, f"Doctor Portal: Dr. {doc['name']}", "🩺")
+        f = tk.Frame(self.container); f.pack(fill="both", expand=True); self.top_bar(f, f"Doctor Portal: Dr. {doc['name']} (Lic: {doc['license_number'] or 'N/A'})", "🩺")
         s_fr = tk.Frame(f, bg="#f8fafc", pady=10); s_fr.pack(fill="x", padx=20)
         t_pats = safe_query("SELECT COUNT(DISTINCT patient_number) as c FROM APPOINTMENT WHERE doctor_id=%s", (did,))[0]['c']; t_earn = safe_query("SELECT SUM(fee) as t FROM APPOINTMENT WHERE doctor_id=%s AND status='Completed'", (did,))[0]['t'] or 0
         tk.Label(s_fr, text=f"Patients Treated: {t_pats} | Total Career Earnings: ${t_earn:,.2f}", font=("Segoe UI", 12, "bold"), bg="#f8fafc", fg="#1e3a8a").pack()
@@ -163,9 +166,16 @@ class HospitalApp(tk.Tk):
         pats = safe_query("SELECT patient_number, name FROM PATIENT") or []
         p_map = {p['name']: p['patient_number'] for p in pats}
         pcbo = ttk.Combobox(t_presc, values=list(p_map.keys()), state="readonly", width=40); pcbo.pack(anchor="w", pady=5)
-        ptext = tk.Text(t_presc, height=6, width=50); ptext.pack(anchor="w", pady=5)
+        tk.Label(t_presc, text="Medication & Dosage:", bg="white").pack(anchor="w")
+        ptext = tk.Text(t_presc, height=4, width=50); ptext.pack(anchor="w", pady=5)
+        tk.Label(t_presc, text="Directions (Usage):", bg="white").pack(anchor="w")
+        dir_e = ttk.Entry(t_presc, width=50); dir_e.pack(anchor="w", pady=5)
         def save_p():
-            pid = p_map[pcbo.get()]; prid = int(datetime.now().timestamp()) % 100000; safe_query("INSERT INTO PRESCRIPTION (prescription_id, doctor_id, patient_number, prescription_date) VALUES (%s,%s,%s,NOW())", (prid, did, pid), fetch=False); messagebox.showinfo("Success", "Prescription Saved!"); ptext.delete("1.0", tk.END)
+            pid = p_map[pcbo.get()]; prid = int(datetime.now().timestamp()) % 100000; 
+            safe_query("INSERT INTO PRESCRIPTION (prescription_id, doctor_id, patient_number, prescription_date) VALUES (%s,%s,%s,NOW())", (prid, did, pid), fetch=False); 
+            # Sync with the new Directions field in the associative table
+            safe_query("INSERT INTO PRESCRIPTION_MEDICATION (prescription_id, medication_id, directions) VALUES (%s, 1, %s)", (prid, dir_e.get()), fetch=False)
+            messagebox.showinfo("Success", "Prescription Saved!"); ptext.delete("1.0", tk.END); dir_e.delete(0, tk.END)
         ttk.Button(t_presc, text="SAVE & PRINT", command=save_p).pack(anchor="w", pady=10)
         t2 = tk.Frame(nb); nb.add(t2, text=" 🖼️ Patient Scans "); stree = make_tree(t2, ("ID", "Patient", "Path", "Type", "Date"))
         for r in (safe_query("SELECT s.scan_id, p.name, s.file_path, s.file_type, s.uploaded_at FROM SCAN_FILE s JOIN PATIENT p ON s.patient_number=p.patient_number WHERE s.doctor_id=%s", (did,)) or []): stree.insert("", "end", values=list(r.values()))
